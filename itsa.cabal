@@ -34,6 +34,7 @@ Executable itsa
     tables                    >= 0.2,
     text                      >= 0.11    && < 0.12,
     time                      >= 1.1     && < 1.5,
+    transformers              >= 0.3,
     xmlhtml                   >= 0.1
 
   if flag(old-base)

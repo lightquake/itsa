@@ -11,18 +11,13 @@ import Data.IORef
 import Data.Table
 import Post
 import Snap.Snaplet
-import Snap.Snaplet.Heist
 
 ------------------------------------------------------------------------------
 data App = App
-    { _heist :: Snaplet (Heist App),
-      _postTable :: IORef (Table Post)
+    { _postTable :: IORef (Table Post)
     }
 
 makeLenses ''App
-
-instance HasHeist App where
-    heistLens = subSnaplet heist
 
 
 ------------------------------------------------------------------------------

@@ -14,7 +14,6 @@ import Data.ByteString        (ByteString)
 import Data.IORef
 import Data.Table
 import Snap.Snaplet
-import Snap.Snaplet.Heist
 import Snap.Util.FileServe
 
 import Application
@@ -25,12 +24,10 @@ routes :: [(ByteString, Handler App App ())]
 routes = [ ("", serveDirectory "static")
          ]
 
-
 ------------------------------------------------------------------------------
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    h <- nestSnaplet "" heist $ heistInit "templates"
     tableRef <- liftIO . newIORef $ fromList []
     addRoutes routes
-    return $ App h tableRef
+    return $ App tableRef

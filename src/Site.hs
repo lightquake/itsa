@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
 ------------------------------------------------------------------------------
 -- | This module is where all the routes and handlers are defined for your
@@ -17,11 +17,13 @@ import Snap.Snaplet
 import Snap.Util.FileServe
 
 import Application
+import Templates
 
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
-routes = [ ("", serveDirectory "static")
+routes = [ ("/static", serveDirectory "static"),
+           ("/", renderTemplate mainPage)
          ]
 
 ------------------------------------------------------------------------------

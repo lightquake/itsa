@@ -17,7 +17,7 @@ import Snap.Snaplet
 import Snap.Util.FileServe
 
 import Application
-import Templates
+import Template
 
 ------------------------------------------------------------------------------
 -- | The application's routes.

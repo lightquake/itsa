@@ -1,10 +1,12 @@
 Name:                itsa
 Version:             0.1
-Synopsis:            Project Synopsis Here
-Description:         Project Description Here
-License:             AllRightsReserved
+Synopsis:            A small blog engine written using Snap.
+Description:         itsa is intended to be extremely simple to use; you write
+                     your posts in markdown files and itsa serves them. No SQL,
+                     no web interface, nothing.
+License:             BSD3
 Author:              Author
-Maintainer:          maintainer@example.com
+Maintainer:          lightquake@amateurtopologist.com
 Stability:           Experimental
 Category:            Web
 Build-type:          Simple

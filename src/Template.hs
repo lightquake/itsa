@@ -4,7 +4,7 @@
 -- we store all templates in their own file unless they're one-liners
 -- or similar.
 
-module Templates where
+module Template where
 
 import Data.Text (Text)
 import Prelude hiding (FilePath)

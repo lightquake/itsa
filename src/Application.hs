@@ -6,7 +6,7 @@ module Application where
 ------------------------------------------------------------------------------
 import Data.IORef
 import Data.Table
-import Post
+import Post.Types
 import Snap.Snaplet
 
 ------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ module Renderer where
 import Control.Lens   (view)
 import Text.Hamlet    (HtmlUrl, hamlet)
 
-import Post
+import Post.Types
 import RelativeHamlet
 
 -- | The datatype representing a route.

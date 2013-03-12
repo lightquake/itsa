@@ -3,7 +3,7 @@
 
 -- | Here we define all the datatypes relevant to a post, which mostly
 -- consist of the 'Post' type itself and a 'Tabular' instance.
-module Post where
+module Post.Types where
 
 import Control.Applicative
 import Control.Lens

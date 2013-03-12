@@ -18,7 +18,7 @@ import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import Text.Hamlet              (HtmlUrl)
 
 import Application
-import Post
+import Post.Types
 import Renderer
 
 -- | This handler renders the main page; i.e., the most recent posts.

@@ -17,7 +17,7 @@ import           Snap.Util.FileServe
 
 import           Application
 import qualified Handler
-import           Post
+import           Post.Types
 
 ------------------------------------------------------------------------------
 -- | The application's routes.

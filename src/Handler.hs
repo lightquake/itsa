@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- Store the templates and routes. For syntax highlighting purposes,
--- we store all templates in their own file unless they're one-liners
--- or similar.
+-- | Individual handlers. We use the renderers defined in Renderer and
+-- our own logic for picking which posts to render.
 
 module Handler where
 
@@ -22,12 +21,16 @@ import Application
 import Post
 import Renderer
 
+-- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: Handler App App ()
 mainPage = do
     postTable <- gets _postTable >>= liftIO . readIORef
     serveTemplate $ renderDefault . renderPosts $
         postTable^..group __posted.rows & take 2 . reverse
 
+-- | Serve a template using Snap by supplying the route renderer to
+-- it, rendering it, and writing as a lazy
+-- 'Data.ByteString.Lazy.ByteString'.
 serveTemplate :: (MonadSnap m) => HtmlUrl ItsaR -> m ()
 serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
  where

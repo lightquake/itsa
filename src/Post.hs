@@ -1,17 +1,31 @@
 {-# LANGUAGE GADTs, OverloadedStrings, TemplateHaskell, TypeFamilies #-}
+{-# OPTIONS_HADDOCK prune #-}
+
+-- | Here we define all the datatypes relevant to a post, which mostly
+-- consist of the 'Post' type itself and a 'Tabular' instance.
 module Post where
 
 import Control.Applicative
 import Control.Lens
 import Data.Default
 import Data.Table
-import Data.Text (Text)
+import Data.Text           (Text)
 import Data.Time
-import Text.Blaze.Html (Html)
+import Text.Blaze.Html     (Html)
 import Text.Pandoc
 
-data Post = Post { __title :: Text, __slug :: Text,
-                   __body :: Html,  __tags :: [Text], __posted :: UTCTime }
+-- | All the information corresponding to a post. Note that the tuple
+-- of slug and post date should be unique, or otherwise bad things
+-- will happen. This is not currently enforced, but should be!
+data Post = Post { __title  :: Text -- ^ The title of the post.
+                 , __slug   :: Text -- ^ The 'slug', which appears in
+                                    -- the URL. This should never
+                                    -- change!
+                 ,  __body  :: Html -- ^ The actual body of the post.
+                 ,  __tags  :: [Text] -- ^ The post tags.
+                 , __posted :: UTCTime -- ^ The time at which the post
+                                       -- is 'posted'.
+                 }
 
 makeLenses ''Post
 

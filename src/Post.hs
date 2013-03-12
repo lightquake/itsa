@@ -32,7 +32,7 @@ instance Tabular Post where
     ixTab (PostTab x) PostId = x
 
 sampleTable :: Table Post
-sampleTable = fromList $
+sampleTable = fromList
               [
                   Post { __title = "Oldest Post", __slug = "post-oldest",
                          __body = writeHtml def $ readMarkdown def "From when the world was new.",

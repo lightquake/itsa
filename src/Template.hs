@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -- Store the templates and routes. For syntax highlighting purposes,
 -- we store all templates in their own file unless they're one-liners
@@ -27,9 +27,6 @@ mainPage = do
     postTable <- gets _postTable >>= liftIO . readIORef
     serveTemplate $ renderDefault . renderPosts $
         postTable^..group __posted.rows & take 2 . reverse
-
-
-
 
 serveTemplate :: (MonadSnap m) => HtmlUrl ItsaR -> m ()
 serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute

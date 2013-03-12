@@ -9,20 +9,21 @@
 
 module RelativeHamlet (hamletRelativeFile, Html) where
 
-import           Control.Applicative ((<$>))
-import           Data.Maybe (catMaybes)
+import           Control.Applicative        ((<$>))
+import           Data.Maybe                 (mapMaybe)
 import           Filesystem
-import qualified Filesystem.Path.CurrentOS as FS
-import           Filesystem.Path.CurrentOS hiding (null, FilePath)
-import           Language.Haskell.TH.Syntax (qAddDependentFile, qRunIO, Q, Exp)
+import           Filesystem.Path.CurrentOS  hiding (FilePath, null)
+import qualified Filesystem.Path.CurrentOS  as FS
+import           Language.Haskell.TH.Syntax (Exp, Q, qAddDependentFile, qRunIO)
 
-import           Text.Hamlet (defaultHamletSettings, hamletFileWithSettings,
-                              hamletRules, Html)
+import           Text.Hamlet                (Html, defaultHamletSettings,
+                                             hamletFileWithSettings,
+                                             hamletRules)
 
 findCabalDirFrom :: FS.FilePath -> IO FS.FilePath
 findCabalDirFrom path = do
     files <- filter ((/= ".cabal") . filename) <$> listDirectory path
-    let dirExtensions = catMaybes . map extension $ files
+    let dirExtensions = mapMaybe extension files
     if "cabal" `elem` dirExtensions
         then return path
         else do

@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 ------------------------------------------------------------------------------
 -- | This module is where all the routes and handlers are defined for your

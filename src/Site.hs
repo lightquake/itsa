@@ -16,14 +16,14 @@ import           Snap.Snaplet
 import           Snap.Util.FileServe
 
 import           Application
+import qualified Handler
 import           Post
-import qualified Template
 
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
-           ("/", Template.mainPage)
+           ("/", Handler.mainPage)
          ]
 
 ------------------------------------------------------------------------------

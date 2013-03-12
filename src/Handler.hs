@@ -4,7 +4,7 @@
 -- we store all templates in their own file unless they're one-liners
 -- or similar.
 
-module Template where
+module Handler where
 
 import Control.Lens
 import Control.Monad.IO.Class   (liftIO)

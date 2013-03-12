@@ -27,7 +27,7 @@
   <div .row #main>
     <div .eightcol>
       <div #left-column>
-        Content will go here
+        ^{leftColumn}
     <aside .fourcol .last>
       <div #right-column>
         Tag list will go here

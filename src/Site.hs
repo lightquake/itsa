@@ -9,27 +9,27 @@ module Site
   ) where
 
 ------------------------------------------------------------------------------
-import Control.Monad.IO.Class
-import Data.ByteString        (ByteString)
-import Data.IORef
-import Data.Table
-import Snap.Snaplet
-import Snap.Util.FileServe
+import           Control.Monad.IO.Class (liftIO)
+import           Data.ByteString        (ByteString)
+import           Data.IORef
+import           Snap.Snaplet
+import           Snap.Util.FileServe
 
-import Application
-import Template
+import           Application
+import           Post
+import qualified Template
 
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
-           ("/", renderTemplate mainPage)
+           ("/", Template.mainPage)
          ]
 
 ------------------------------------------------------------------------------
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    tableRef <- liftIO . newIORef $ fromList []
+    tableRef <- liftIO . newIORef $ sampleTable
     addRoutes routes
     return $ App tableRef

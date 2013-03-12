@@ -17,8 +17,6 @@ data App = App
     { _postTable :: IORef (Table Post)
     }
 
-makeLenses ''App
-
 
 ------------------------------------------------------------------------------
 type AppHandler = Handler App App

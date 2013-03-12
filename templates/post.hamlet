@@ -1,0 +1,8 @@
+<div .title>
+  <a .title href=whoops>#{view _title post}
+<div>
+  <div .content>#{view _body post}
+  <div .metadata>
+   <span .time>
+      Posted: post time
+   <div style="clear: both;">

@@ -25,11 +25,14 @@ Executable itsa
   main-is: Main.hs
 
   Build-depends:
+    blaze-html                >= 0.5,
     blaze-markup              >= 0.5,
     bytestring                >= 0.9.1,
+    data-default,
     hamlet                    >= 1.0,
     MonadCatchIO-transformers >= 0.2.1,
     mtl                       >= 2,
+    pandoc                    >= 1.10,
     shakespeare               >= 1.0,
     snap                      >= 0.11,
     snap-core                 >= 0.9,

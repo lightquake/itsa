@@ -17,6 +17,7 @@ import           Snap.Util.FileServe
 
 import           Application
 import qualified Handler
+import           Post.Loader
 import           Post.Types
 
 ------------------------------------------------------------------------------
@@ -30,6 +31,6 @@ routes = [ ("/static", serveDirectory "static"),
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    tableRef <- liftIO . newIORef $ sampleTable
+    tableRef <- liftIO (loadPosts "posts/" >>= newIORef)
     addRoutes routes
     return $ App tableRef

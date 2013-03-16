@@ -45,7 +45,8 @@ Executable itsa
     text                      >= 0.11,
     time                      >= 1.1,
     transformers              >= 0.3,
-    xmlhtml                   >= 0.1
+    xmlhtml                   >= 0.1,
+    yaml                      >= 0.8
 
   if flag(old-base)
     build-depends:

@@ -37,5 +37,5 @@ renderPost post = $(hamletRelativeFile "templates/post.hamlet")
 
 -- | Render the tag list, given a list of (tag, frequency) tuples.
 renderTagList :: [(T.Text, Int)] -> HtmlUrl ItsaR
-renderTagList tagList = $(hamletRelativeFile "templates/tag-list.hamlet")
-  where sortedTagList = reverse $ sortBy (comparing snd) tagList
+renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
+  where tagList = reverse $ sortBy (comparing snd) unsorted

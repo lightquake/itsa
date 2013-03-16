@@ -23,7 +23,7 @@ data Post = Post { __title  :: Text -- ^ The title of the post.
                                     -- the URL. This should never
                                     -- change!
                  ,  __body  :: Html -- ^ The actual body of the post.
-                 ,  __tags  :: S.Set Text -- ^ The post tags.
+                 ,  __tags  :: [Text] -- ^ The post tags.
                  , __posted :: UTCTime -- ^ The time at which the post
                                        -- is 'posted'.
                  }
@@ -39,7 +39,7 @@ instance Tabular Post where
     data Tab Post i = PostTab (i Primary (Day, Text)) (i Inverted (S.Set Text))
 
     fetch PostId post = (post^._posted.to utctDay, post^._slug)
-    fetch Tags post = post^._tags
+    fetch Tags post = post^._tags & S.fromList
 
     primary = PostId
     primarily PostId r = r
@@ -54,17 +54,17 @@ sampleTable = fromList
               [
                   Post { __title = "Oldest Post", __slug = "post-oldest",
                          __body = writeHtml def $ readMarkdown def "From when the world was new.",
-                         __tags = S.fromList ["old", "so old"],
+                         __tags = ["old", "so old"],
                          __posted = UTCTime (fromGregorian 1990 1 1)
                                     (secondsToDiffTime 800)},
                   Post { __title = "Post 1", __slug = "post-1",
                        __body = writeHtml def $ readMarkdown def "post *body*",
-                       __tags = S.fromList ["tag1", "tag2"],
+                       __tags = ["tag1", "tag2"],
                        __posted = UTCTime (fromGregorian 2013 3 5)
                                   (secondsToDiffTime 800)},
                   Post { __title = "Post Two", __slug = "post-two",
                          __body = writeHtml def $ readMarkdown def "This is also a post.",
-                         __tags = S.fromList ["tag2", "tag3"],
+                         __tags = ["tag2", "tag3"],
                          __posted = UTCTime (fromGregorian 2013 3 2)
                                     (secondsToDiffTime 800)}
               ]

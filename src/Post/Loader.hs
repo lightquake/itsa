@@ -7,7 +7,6 @@ import           Control.Applicative       ((<$>))
 import           Control.Exception
 import           Control.Monad             (filterM, forM)
 import           Data.Either               (partitionEithers)
-import qualified Data.Set                  as S
 import           Data.Table
 import qualified Data.Text                 as T
 import           Data.Text.Encoding        (decodeUtf8With)
@@ -58,7 +57,7 @@ buildPost :: T.Text -> Yaml.Object -> Yaml.Parser Post
 buildPost body o = do
     title <- o .: "title"
     slug <- o .: "slug"
-    tags <- S.fromList <$> o .:? "tags" .!= []
+    tags <- o .:? "tags" .!= []
     posted <- zonedTimeToUTC . read <$> o .: "posted"
     return Post { __title = title,
                   __slug = slug,

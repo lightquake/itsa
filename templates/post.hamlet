@@ -5,4 +5,12 @@
   <div .metadata>
    <span .time>
       Posted: post time
+
+   <span .tags>
+      $with tags <- view _tags post
+        $if not (null tags)
+          Tagged: <a href=@{TagR $ head tags}>#{head tags}</a>
+          $forall tag <- tail tags
+            , <a href=@{TagR tag}>#{tag}</a>
+
    <div style="clear: both;">

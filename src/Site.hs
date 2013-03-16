@@ -24,6 +24,7 @@ import           Post.Types
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
+           ("/tagged/:tagName", Handler.tagPage),
            ("/", Handler.mainPage)
          ]
 

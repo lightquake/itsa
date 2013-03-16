@@ -5,14 +5,15 @@
 -- consist of the 'Post' type itself and a 'Tabular' instance.
 module Post.Types where
 
-import Control.Applicative
-import Control.Lens
-import Data.Default
-import Data.Table
-import Data.Text           (Text)
-import Data.Time
-import Text.Blaze.Html     (Html)
-import Text.Pandoc
+import           Control.Applicative
+import           Control.Lens
+import           Data.Default
+import qualified Data.Set            as S
+import           Data.Table
+import           Data.Text           (Text)
+import           Data.Time
+import           Text.Blaze.Html     (Html)
+import           Text.Pandoc
 
 -- | All the information corresponding to a post. Note that the tuple
 -- of slug and post date should be unique, or otherwise bad things
@@ -33,17 +34,20 @@ instance Tabular Post where
     type PKT Post = (Day, Text)
     data Key k Post b where
         PostId :: Key Primary Post (Day, Text)
+        Tags :: Key Inverted Post (S.Set Text)
 
-    data Tab Post i = PostTab (i Primary (Day, Text))
+    data Tab Post i = PostTab (i Primary (Day, Text)) (i Inverted (S.Set Text))
 
     fetch PostId post = (post^._posted.to utctDay, post^._slug)
+    fetch Tags post = post^._tags & S.fromList
 
     primary = PostId
     primarily PostId r = r
 
-    mkTab f = PostTab <$> f PostId
-    forTab (PostTab x) f = PostTab <$> f PostId x
-    ixTab (PostTab x) PostId = x
+    mkTab f = PostTab <$> f PostId <*> f Tags
+    forTab (PostTab i t) f = PostTab <$> f PostId i <*> f Tags t
+    ixTab (PostTab i _) PostId = i
+    ixTab (PostTab _ t) Tags = t
 
 sampleTable :: Table Post
 sampleTable = fromList

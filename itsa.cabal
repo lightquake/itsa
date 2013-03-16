@@ -28,6 +28,7 @@ Executable itsa
     blaze-html                >= 0.5,
     blaze-markup              >= 0.5,
     bytestring                >= 0.9.1,
+    containers,
     data-default,
     hamlet                    >= 1.0,
     MonadCatchIO-transformers >= 0.2.1,

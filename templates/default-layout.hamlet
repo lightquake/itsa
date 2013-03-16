@@ -30,6 +30,6 @@
         ^{leftColumn}
     <aside .fourcol .last>
       <div #right-column>
-        Tag list will go here
+        ^{rightColumn}
   <div .row>
     Footer will go here

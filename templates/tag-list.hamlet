@@ -1,0 +1,3 @@
+<div .sidebar-tag-list .shadowed>
+  $forall tag <- map fst tagList
+    <span .tag><a href=@{TagR tag}>#{tag}</a></span>

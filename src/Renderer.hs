@@ -30,7 +30,7 @@ renderTwoColumn leftColumn rightColumn
     = $(hamletRelativeFile "templates/default-layout.hamlet")
 
 -- | Render a page using the default right column; i.e., the tag list.
-renderDefault :: HtmlUrl ItsaR -> Handler App App (HtmlUrl ItsaR)
+renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
     postTable <- getRef _postTable
     return $ renderTwoColumn tpl

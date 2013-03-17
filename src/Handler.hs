@@ -15,7 +15,6 @@ import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Prelude                  hiding (FilePath)
 import Snap.Core                (MonadSnap, getParam, writeLBS)
-import Snap.Snaplet
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import Text.Hamlet              (HtmlUrl)
 
@@ -24,14 +23,14 @@ import Post.Types
 import Renderer
 
 -- | This handler renders the main page; i.e., the most recent posts.
-mainPage :: Handler App App ()
+mainPage :: AppHandler ()
 mainPage = do
     postTable <- getRef _postTable
     let posts = postTable^..rows' & renderPosts . take 2 . reverse
     renderDefault posts >>= serveTemplate
 
 -- | Show posts with a given tag.
-tagPage :: Handler App App ()
+tagPage :: AppHandler ()
 tagPage = do
     mTagName <- getParamAsText "tagName"
     case mTagName of

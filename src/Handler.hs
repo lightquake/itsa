@@ -7,10 +7,7 @@ module Handler (mainPage, tagPage) where
 
 import Control.Applicative      ((<$>))
 import Control.Lens
-import Control.Monad.IO.Class   (liftIO)
-import Control.Monad.State      (gets)
 import Data.ByteString          (ByteString)
-import Data.IORef               (readIORef)
 import Data.Monoid              ((<>))
 import Data.Table
 import Data.Text                (Text)
@@ -29,10 +26,9 @@ import Renderer
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: Handler App App ()
 mainPage = do
-    postTable <- gets _postTable >>= liftIO . readIORef
+    postTable <- getRef _postTable
     let posts = postTable^..rows' & renderPosts . take 2 . reverse
-    let renderedTags = postTable^@..group Tags. to count & renderTagList
-    serveTemplate $ renderDefault posts renderedTags
+    renderDefault posts >>= serveTemplate
 
 -- | Show posts with a given tag.
 tagPage :: Handler App App ()
@@ -41,10 +37,10 @@ tagPage = do
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
         Just tagName -> do
-            postTable <- gets _postTable >>= liftIO . readIORef
-            let posts = postTable^..withAny Tags [tagName].rows & renderPosts . take 2 . reverse
-            let renderedTags = postTable^@..group Tags. to count & renderTagList
-            serveTemplate $ renderDefault posts renderedTags
+            postTable <- getRef _postTable
+            let posts = postTable^..withAny Tags [tagName].rows &
+                        renderPosts . take 2 . reverse
+            renderDefault posts >>= serveTemplate
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

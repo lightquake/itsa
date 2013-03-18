@@ -59,9 +59,7 @@ postPage = do
     where postPage' year month day slug = do
               postTable <- getRef _postTable
               let key = (fromGregorian year month day, slug)
-              return $ case postTable^..with PostId (==) key.rows of
-                  [] -> render404
-                  post:_ -> renderPost post
+              return $ postTable^.at key & maybe render404 renderPost
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

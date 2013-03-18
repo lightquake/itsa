@@ -3,16 +3,18 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (mainPage, tagPage) where
+module Handler (mainPage, postPage, tagPage) where
 
-import Control.Applicative      ((<$>))
+import Control.Applicative      ((<$>), (<*>))
 import Control.Lens
 import Data.ByteString          (ByteString)
+import Data.Maybe               (fromMaybe)
 import Data.Monoid              ((<>))
 import Data.Table
-import Data.Text                (Text)
+import Data.Text                (Text, pack, unpack)
 import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
+import Data.Time.Calendar       (fromGregorian)
 import Prelude                  hiding (FilePath)
 import Snap.Core                (MonadSnap, getParam, writeLBS)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
@@ -41,6 +43,24 @@ tagPage = do
                         renderPosts . take 2 . reverse
             renderDefault posts >>= serveTemplate
 
+postPage :: AppHandler ()
+postPage = do
+    mYear <- readParam "year"
+    mMonth <- readParam "month"
+    mDay <- readParam "day"
+    mSlug <- getParamAsText "slug"
+    serveTemplate =<< renderDefault =<< fromMaybe (return render404)
+        (postPage' <$> mYear <*> mMonth <*> mDay <*> mSlug)
+    where postPage' year month day slug = do
+              postTable <- getRef _postTable
+              let key = (fromGregorian year month day, slug)
+              return $ case postTable^..with PostId (==) key.rows of
+                  [] -> render404
+                  post:_ -> renderPosts [post]
+
+
+-- | Show the post
+
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy
 -- 'Data.ByteString.Lazy.ByteString'.
@@ -52,6 +72,15 @@ serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
     renderRoute :: ItsaR -> [(Text, Text)] -> Text
     renderRoute RootR _ = "/"
     renderRoute (TagR tag) _ = "/tagged/" <> tag
+    renderRoute (PostR year month day slug) _ = "/post/" <> showT year
+                                                <> "/" <> showT month
+                                                <> "/" <> showT day
+                                                <> "/" <> slug
+      where showT :: (Show a) => a -> Text
+            showT = pack . show
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param
+
+readParam :: (MonadSnap m, Read a) => ByteString -> m (Maybe a)
+readParam param = fmap (read . unpack) <$> getParamAsText param

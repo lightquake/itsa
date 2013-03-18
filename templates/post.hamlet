@@ -1,5 +1,5 @@
 <div .title>
-  <a .title href=whoops>#{view _title post}
+  <a .title href=@{postRouter post}>#{view _title post}
 <div>
   <div .content>#{view _body post}
   <div .metadata>

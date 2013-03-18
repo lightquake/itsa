@@ -43,8 +43,13 @@ tagPage = do
                         renderPosts . take 2 . reverse
             renderDefault posts >>= serveTemplate
 
+-- | Show the post with a given slug posted on a given year/month/day.
+-- As an amusing side-effect of read being permissive, a URL with
+-- /0x7DC/9/0o25/foo will also work. If you rely on that, you're weird.
 postPage :: AppHandler ()
 postPage = do
+    -- Can't turn this into a mapM because year is an Integer, but
+    -- month and day are Ints.
     mYear <- readParam "year"
     mMonth <- readParam "month"
     mDay <- readParam "day"
@@ -56,10 +61,7 @@ postPage = do
               let key = (fromGregorian year month day, slug)
               return $ case postTable^..with PostId (==) key.rows of
                   [] -> render404
-                  post:_ -> renderPosts [post]
-
-
--- | Show the post
+                  post:_ -> renderPost post
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

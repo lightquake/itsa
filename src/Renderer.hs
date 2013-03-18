@@ -47,7 +47,7 @@ renderDefault tpl = do
 -- | Render a series of posts.
 renderPosts :: [Post] -> HtmlUrl ItsaR
 renderPosts posts = [hamlet|$forall post <- posts
-                                            <article>^{renderPost post}|]
+                                            ^{renderPost post}|]
 
 -- | Render an individual post.
 renderPost :: Post -> HtmlUrl ItsaR

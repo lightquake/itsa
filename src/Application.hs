@@ -1,10 +1,11 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, MultiParamTypeClasses, TemplateHaskell #-}
 ------------------------------------------------------------------------------
 -- | This module defines our application's state type and an alias for its
 -- handler monad.
 module Application where
 
 ------------------------------------------------------------------------------
+import Control.Lens           (makeLenses)
 import Control.Monad.IO.Class
 import Control.Monad.State
 import Data.IORef
@@ -14,12 +15,13 @@ import Snap.Snaplet
 
 ------------------------------------------------------------------------------
 data App = App
-    { _postTable :: IORef (Table Post)
+    { __postTable :: IORef (Table Post)
     }
 
-getRef :: (MonadState s m, MonadIO m) => (s -> IORef a) -> m a
-getRef ref = gets ref >>= liftIO . readIORef
+getPostTable :: (MonadState App m, MonadIO m) => m (Table Post)
+getPostTable = gets __postTable >>= liftIO . readIORef
 
+makeLenses ''App
 
 ------------------------------------------------------------------------------
 type AppHandler = Handler App App

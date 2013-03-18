@@ -27,7 +27,7 @@ import Renderer
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: AppHandler ()
 mainPage = do
-    postTable <- getRef _postTable
+    postTable <- getPostTable
     let posts = postTable^..rows' & renderPosts . take 2 . reverse
     renderDefault posts >>= serveTemplate
 
@@ -38,7 +38,7 @@ tagPage = do
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
         Just tagName -> do
-            postTable <- getRef _postTable
+            postTable <- getPostTable
             let posts = postTable^..withAny Tags [tagName].rows &
                         renderPosts . take 2 . reverse
             renderDefault posts >>= serveTemplate
@@ -57,7 +57,7 @@ postPage = do
     serveTemplate =<< renderDefault =<< fromMaybe (return render404)
         (postPage' <$> mYear <*> mMonth <*> mDay <*> mSlug)
     where postPage' year month day slug = do
-              postTable <- getRef _postTable
+              postTable <- getPostTable
               let key = (fromGregorian year month day, slug)
               return $ postTable^.at key & maybe render404 renderPost
 

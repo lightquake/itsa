@@ -39,7 +39,7 @@ renderTwoColumn leftColumn rightColumn
 -- | Render a page using the default right column; i.e., the tag list.
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
-    postTable <- getRef _postTable
+    postTable <- getPostTable
     return $ renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
 

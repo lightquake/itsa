@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, Rank2Types #-}
 
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
@@ -27,24 +27,15 @@ import Renderer
 
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: AppHandler ()
-mainPage = do
-    postTable <- getPostTable
-    postsPerPage <- view $ _config._postsPerPage
-    let posts = postTable^..rows' & renderPosts . take postsPerPage . reverse
-    renderDefault posts >>= serveTemplate
+mainPage = showPaginatedPosts id
 
 -- | Show posts with a given tag.
 tagPage :: AppHandler ()
 tagPage = do
-    postsPerPage <- view $ _config._postsPerPage
     mTagName <- getParamAsText "tagName"
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
-        Just tagName -> do
-            postTable <- getPostTable
-            let posts = postTable^..withAny Tags [tagName].rows &
-                        renderPosts . take postsPerPage . reverse
-            renderDefault posts >>= serveTemplate
+        Just tagName -> showPaginatedPosts (withAny Tags [tagName])
 
 -- | Show the post with a given slug posted on a given year/month/day.
 -- As an amusing side-effect of read being permissive, a URL with
@@ -63,6 +54,18 @@ postPage = do
               postTable <- getPostTable
               let key = (fromGregorian year month day, slug)
               return $ postTable^.at key & maybe render404 renderPost
+
+-- | Show the given page of posts filtered using the given lens. This
+-- uses the :page parameter name, but defaults to page 1.
+showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
+showPaginatedPosts postFilter = do
+    pageNumber <- fromMaybe 1 <$> readParam "page"
+    postsPerPage <- view $ _config._postsPerPage
+    postTable <- getPostTable
+    let posts = postTable^..postFilter.group __posted.rows'
+                & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
+                . reverse
+    renderDefault (renderPosts posts) >>= serveTemplate
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

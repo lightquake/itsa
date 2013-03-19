@@ -13,9 +13,12 @@ import Data.Table
 import Post.Types
 import Snap.Snaplet
 
+import Config
+
 ------------------------------------------------------------------------------
 data App = App
-    { __postTable :: IORef (Table Post)
+    { __postTable :: IORef (Table Post),
+      __config :: Config
     }
 
 getPostTable :: (MonadState App m, MonadIO m) => m (Table Post)

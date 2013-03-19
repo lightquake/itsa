@@ -9,16 +9,18 @@ module Site
   ) where
 
 ------------------------------------------------------------------------------
-import           Control.Monad.IO.Class (liftIO)
-import           Data.ByteString        (ByteString)
+import           Control.Applicative ((<$>))
+import           Control.Monad.IO.Class   (liftIO)
+import           Data.ByteString          (ByteString)
 import           Data.IORef
+import           Data.Yaml                (decodeEither)
+import           Filesystem               as FS
 import           Snap.Snaplet
 import           Snap.Util.FileServe
 
 import           Application
 import qualified Handler
 import           Post.Loader
-import           Post.Types
 
 ------------------------------------------------------------------------------
 -- | The application's routes.
@@ -34,5 +36,7 @@ routes = [ ("/static", serveDirectory "static"),
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     tableRef <- liftIO (loadPosts "posts/" >>= newIORef)
+    config <- liftIO (either error id . decodeEither
+                      <$> FS.readFile "config.yaml")
     addRoutes routes
-    return $ App tableRef
+    return $ App tableRef config

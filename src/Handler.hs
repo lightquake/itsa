@@ -21,6 +21,7 @@ import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import Text.Hamlet              (HtmlUrl)
 
 import Application
+import Config
 import Post.Types
 import Renderer
 
@@ -28,19 +29,21 @@ import Renderer
 mainPage :: AppHandler ()
 mainPage = do
     postTable <- getPostTable
-    let posts = postTable^..rows' & renderPosts . take 2 . reverse
+    postsPerPage <- view $ _config._postsPerPage
+    let posts = postTable^..rows' & renderPosts . take postsPerPage . reverse
     renderDefault posts >>= serveTemplate
 
 -- | Show posts with a given tag.
 tagPage :: AppHandler ()
 tagPage = do
+    postsPerPage <- view $ _config._postsPerPage
     mTagName <- getParamAsText "tagName"
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
         Just tagName -> do
             postTable <- getPostTable
             let posts = postTable^..withAny Tags [tagName].rows &
-                        renderPosts . take 2 . reverse
+                        renderPosts . take postsPerPage . reverse
             renderDefault posts >>= serveTemplate
 
 -- | Show the post with a given slug posted on a given year/month/day.

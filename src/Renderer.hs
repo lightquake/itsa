@@ -21,6 +21,7 @@ import Data.Time      (toGregorian, utctDay)
 import Text.Hamlet    (HtmlUrl, hamlet)
 
 import Application
+import Config
 import Post.Types
 import RelativeHamlet
 
@@ -32,15 +33,17 @@ data ItsaR = RootR -- ^ The docroot.
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
                  -> HtmlUrl ItsaR -- ^ The HTML to show in the right column.
-                 -> HtmlUrl ItsaR
+                 -> AppHandler (HtmlUrl ItsaR)
 renderTwoColumn leftColumn rightColumn
-    = $(hamletRelativeFile "templates/default-layout.hamlet")
+    = do
+        blogTitle <- view $ _config._blogTitle
+        return $ $(hamletRelativeFile "templates/default-layout.hamlet")
 
 -- | Render a page using the default right column; i.e., the tag list.
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
     postTable <- getPostTable
-    return $ renderTwoColumn tpl
+    renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
 
 

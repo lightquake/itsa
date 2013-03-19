@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
 
-        <title>Blog title goes here</title>
+        <title>#{blogTitle}</title>
         <link rel=alternate type=application/rss+xml href=rss>
         <link rel=icon type=image/png href=favicon>
         <link rel=stylesheet type=text/css href="/static/css/highlight_default.css">
@@ -21,7 +21,7 @@
 <div .container>
   <header .row>
       <div #title>
-        <a .title href=@{RootR}>Blog title goes here
+        <a .title href=@{RootR}>#{blogTitle}
 
 
   <div .row #main>

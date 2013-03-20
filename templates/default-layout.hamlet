@@ -2,8 +2,9 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <title>#{blogTitle}</title>
+        <title>#{pageTitle}</title>
         <link rel=alternate type=application/rss+xml href=rss>
         <link rel=icon type=image/png href=favicon>
         <link rel=stylesheet type=text/css href="/static/css/highlight_default.css">
@@ -11,25 +12,12 @@
         <link rel=stylesheet type=text/css href="http://fonts.googleapis.com/css?family=Bree+Serif&subset=latin,latin-ext">
         <link rel=stylesheet type=text/css href="/static/css/carbonated.css">
 
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
-
-
-<div .container>
-  <header .row>
-      <div #title>
-        <a .title href=@{RootR}>#{blogTitle}
-
-
-  <div .row #main>
-    <div .eightcol>
-      <div #left-column>
-        ^{leftColumn}
-    <aside .fourcol .last>
-      <div #right-column>
-        ^{rightColumn}
-  <div .row>
-    Footer will go here
+<body>
+  <div .container>
+    <header .row>
+        <div #title>
+          <a .title href=@{RootR}>#{blogTitle}
+    ^{body}

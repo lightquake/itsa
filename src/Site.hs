@@ -41,4 +41,4 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes
-    return $ App tableRef config
+    return $ App tableRef config Nothing

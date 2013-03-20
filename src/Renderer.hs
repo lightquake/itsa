@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes, TemplateHaskell #-}
 
 -- | This module creates functions that take in data and other
 -- rendered templates and give another template in return. Note that
@@ -14,6 +14,7 @@ module Renderer (ItsaR(..),
 
 import Control.Lens
 import Data.List      (sortBy)
+import Data.Monoid
 import Data.Ord       (comparing)
 import Data.Table     (count, group)
 import Data.Text      (Text)
@@ -35,16 +36,18 @@ renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
                  -> HtmlUrl ItsaR -- ^ The HTML to show in the right column.
                  -> AppHandler (HtmlUrl ItsaR)
 renderTwoColumn leftColumn rightColumn
-    = do
-        blogTitle <- view $ _config._blogTitle
-        return $ $(hamletRelativeFile "templates/default-layout.hamlet")
+    = return $ $(hamletRelativeFile "templates/two-column.hamlet")
 
 -- | Render a page using the default right column; i.e., the tag list.
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
     postTable <- getPostTable
-    renderTwoColumn tpl
+    blogTitle <- view $ _config._blogTitle
+    subtitle <- view _subtitle
+    let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
+    body <- renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
+    return $(hamletRelativeFile "templates/default-layout.hamlet")
 
 
 -- | Render a series of posts.

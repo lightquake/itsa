@@ -1,0 +1,9 @@
+<div .row #main>
+  <div .eightcol>
+    <div #left-column>
+      ^{leftColumn}
+  <aside .fourcol .last>
+    <div #right-column>
+      ^{rightColumn}
+<div .row>
+  Footer will go here

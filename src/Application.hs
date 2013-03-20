@@ -10,17 +10,25 @@ import Control.Monad.IO.Class
 import Control.Monad.State
 import Data.IORef
 import Data.Table
-import Post.Types
+import Data.Text              (Text)
 import Snap.Snaplet
 
 import Config
-
+import Post.Types
 ------------------------------------------------------------------------------
 data App = App
-    { __postTable :: IORef (Table Post),
-      __config :: Config
+    { __postTable :: IORef (Table Post), -- ^ The table of posts;
+                                         -- stored in an IORef so that
+                                         -- the reloader can reload it
+                                         -- automatically.
+      __config    :: Config, -- ^ Configuration data.
+      __subtitle  :: Maybe Text -- ^ The 'subtitle' of the current
+                                -- page, which is either set by a
+                                -- handler or renderer and used by the
+                                -- renderer.
     }
 
+-- | Get the 'Table' 'Post' out of anything that has an 'App' as state.
 getPostTable :: (MonadState App m, MonadIO m) => m (Table Post)
 getPostTable = gets __postTable >>= liftIO . readIORef
 

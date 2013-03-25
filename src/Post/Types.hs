@@ -16,13 +16,14 @@ import           Text.Blaze.Html     (Html)
 -- | All the information corresponding to a post. Note that the tuple
 -- of slug and post date should be unique, or otherwise bad things
 -- will happen. This is not currently enforced, but should be!
-data Post = Post { __title  :: Text -- ^ The title of the post.
-                 , __slug   :: Text -- ^ The 'slug', which appears in
+data Post = Post { __title   :: Text -- ^ The title of the post.
+                 , __slug    :: Text -- ^ The 'slug', which appears in
                                     -- the URL. This should never
                                     -- change!
-                 ,  __body  :: Html -- ^ The actual body of the post.
-                 ,  __tags  :: [Text] -- ^ The post tags.
-                 , __posted :: UTCTime -- ^ The time at which the post
+                 , __body    :: Html -- ^ The actual body of the post.
+                 , __tags    :: [Text] -- ^ The post tags.
+                 , __isDraft :: Bool -- ^ Whether the post is a draft.
+                 , __posted  :: UTCTime -- ^ The time at which the post
                                        -- is 'posted'.
                  }
 

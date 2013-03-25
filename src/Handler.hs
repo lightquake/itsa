@@ -63,10 +63,15 @@ postPage = do
                     return $ renderPost post
                 Nothing -> return render404
 
+-- | Similar to 'showAllPaginatedPosts', but excludes drafts.
+showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
+showPaginatedPosts postFilter =
+    showAllPaginatedPosts $ postFilter.with __isDraft (==) False
+
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.
-showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
-showPaginatedPosts postFilter = do
+showAllPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
+showAllPaginatedPosts postFilter = do
     pageNumber <- fromMaybe 1 <$> readParam "page"
     postsPerPage <- view $ _config._postsPerPage
     postTable <- getPostTable

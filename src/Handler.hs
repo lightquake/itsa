@@ -33,9 +33,10 @@ mainPage = showPaginatedPosts id
 tagPage :: AppHandler ()
 tagPage = do
     mTagName <- getParamAsText "tagName"
+    assign _subtitle mTagName
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
-        Just tagName -> showPaginatedPosts (withAny Tags [tagName])
+        Just tagName -> showPaginatedPosts $ withAny Tags [tagName]
 
 -- | Show the post with a given slug posted on a given year/month/day.
 -- As an amusing side-effect of read being permissive, a URL with
@@ -50,10 +51,17 @@ postPage = do
     mSlug <- getParamAsText "slug"
     serveTemplate =<< renderDefault =<< fromMaybe (return render404)
         (postPage' <$> mYear <*> mMonth <*> mDay <*> mSlug)
-    where postPage' year month day slug = do
-              postTable <- getPostTable
-              let key = (fromGregorian year month day, slug)
-              return $ postTable^.at key & maybe render404 renderPost
+      where
+        -- Given a year, month, day, and slug, either render that post
+        -- or 404.
+        postPage' :: Integer -> Int -> Int -> Text -> AppHandler (HtmlUrl ItsaR)
+        postPage' year month day slug = do
+            postTable <- getPostTable
+            case postTable^.at (fromGregorian year month day, slug) of
+                Just post -> do
+                    assign _subtitle $ Just $ view _title post
+                    return $ renderPost post
+                Nothing -> return render404
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.

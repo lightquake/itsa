@@ -3,7 +3,7 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (mainPage, postPage, tagPage) where
+module Handler (draftsPage, mainPage, postPage, tagPage) where
 
 import Control.Applicative      ((<$>), (<*>))
 import Control.Lens
@@ -37,6 +37,10 @@ tagPage = do
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
         Just tagName -> showPaginatedPosts $ withAny Tags [tagName]
+
+-- | Show all draft posts.
+draftsPage :: AppHandler ()
+draftsPage = showAllPaginatedPosts $ with __isDraft (==) True
 
 -- | Show the post with a given slug posted on a given year/month/day.
 -- As an amusing side-effect of read being permissive, a URL with

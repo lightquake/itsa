@@ -41,12 +41,11 @@ tagPage = do
 
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
-draftsPage = localhostOnly >> showAllPaginatedPosts (with __isDraft (==) True)
+draftsPage = localhostOnly $ showAllPaginatedPosts (with __isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
-queuePage = do
-    localhostOnly
+queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
     showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
 
@@ -95,10 +94,10 @@ showAllPaginatedPosts postFilter = do
     renderDefault (renderPosts posts) >>= serveTemplate
 
 -- | Ensure that the requesting IP is 127.0.0.1, or else 403.
-localhostOnly :: AppHandler ()
-localhostOnly = do
+localhostOnly :: AppHandler () -> AppHandler ()
+localhostOnly action = do
     reqIp <- rqRemoteAddr <$> getRequest
-    if reqIp == "127.0.0.1" then pass else do
+    if reqIp == "127.0.0.1" then action else do
         modifyResponse $ setResponseCode 403
         serveTemplate =<< renderDefault [hamlet|<h1>403|]
         finishWith =<< getResponse

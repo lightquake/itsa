@@ -7,24 +7,23 @@ module Post.Types where
 
 import           Control.Applicative
 import           Control.Lens
-import           Data.Default
 import qualified Data.Set            as S
 import           Data.Table
 import           Data.Text           (Text)
 import           Data.Time
 import           Text.Blaze.Html     (Html)
-import           Text.Pandoc
 
 -- | All the information corresponding to a post. Note that the tuple
 -- of slug and post date should be unique, or otherwise bad things
 -- will happen. This is not currently enforced, but should be!
-data Post = Post { __title  :: Text -- ^ The title of the post.
-                 , __slug   :: Text -- ^ The 'slug', which appears in
+data Post = Post { __title   :: Text -- ^ The title of the post.
+                 , __slug    :: Text -- ^ The 'slug', which appears in
                                     -- the URL. This should never
                                     -- change!
-                 ,  __body  :: Html -- ^ The actual body of the post.
-                 ,  __tags  :: [Text] -- ^ The post tags.
-                 , __posted :: UTCTime -- ^ The time at which the post
+                 , __body    :: Html -- ^ The actual body of the post.
+                 , __tags    :: [Text] -- ^ The post tags.
+                 , __isDraft :: Bool -- ^ Whether the post is a draft.
+                 , __posted  :: UTCTime -- ^ The time at which the post
                                        -- is 'posted'.
                  }
 

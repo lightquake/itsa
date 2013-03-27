@@ -30,6 +30,10 @@ routes = [ ("/static", serveDirectory "static"),
            ("/tagged/:tagName", Handler.tagPage),
            ("/post/:year/:month/:day/:slug", Handler.postPage),
            ("/page/:page", Handler.mainPage),
+           ("/drafts", Handler.draftsPage),
+           ("/drafts/:page", Handler.draftsPage),
+           ("/queue", Handler.queuePage),
+           ("/queue/:page", Handler.queuePage),
            ("/", Handler.mainPage)
          ]
 

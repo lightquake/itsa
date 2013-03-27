@@ -1,12 +1,13 @@
-{-# LANGUAGE OverloadedStrings, Rank2Types #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes, Rank2Types #-}
 
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (mainPage, postPage, tagPage) where
+module Handler (draftsPage, mainPage, postPage, queuePage, tagPage) where
 
 import Control.Applicative      ((<$>), (<*>))
 import Control.Lens
+import Control.Monad.IO.Class   (liftIO)
 import Data.ByteString          (ByteString)
 import Data.Maybe               (fromMaybe)
 import Data.Monoid              ((<>))
@@ -14,11 +15,11 @@ import Data.Table
 import Data.Text                (Text, pack, unpack)
 import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import Data.Time.Calendar       (fromGregorian)
+import Data.Time                (fromGregorian, getCurrentTime)
 import Prelude                  hiding (FilePath)
-import Snap.Core                (MonadSnap, getParam, writeLBS)
+import Snap.Core
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
-import Text.Hamlet              (HtmlUrl)
+import Text.Hamlet              (HtmlUrl, hamlet)
 
 import Application
 import Config
@@ -37,6 +38,17 @@ tagPage = do
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
         Just tagName -> showPaginatedPosts $ withAny Tags [tagName]
+
+-- | Show all draft posts.
+draftsPage :: AppHandler ()
+draftsPage = localhostOnly >> showAllPaginatedPosts (with __isDraft (==) True)
+
+-- | Show all queued, non-draft posts.
+queuePage :: AppHandler ()
+queuePage = do
+    localhostOnly
+    now <- liftIO getCurrentTime
+    showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
 
 -- | Show the post with a given slug posted on a given year/month/day.
 -- As an amusing side-effect of read being permissive, a URL with
@@ -63,10 +75,17 @@ postPage = do
                     return $ renderPost post
                 Nothing -> return render404
 
--- | Show the given page of posts filtered using the given lens. This
--- uses the :page parameter name, but defaults to page 1.
+-- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
 showPaginatedPosts postFilter = do
+    now <- liftIO getCurrentTime
+    showAllPaginatedPosts $ postFilter.with __isDraft (==) False
+        .with __posted (<=) now
+
+-- | Show the given page of posts filtered using the given lens. This
+-- uses the :page parameter name, but defaults to page 1.
+showAllPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
+showAllPaginatedPosts postFilter = do
     pageNumber <- fromMaybe 1 <$> readParam "page"
     postsPerPage <- view $ _config._postsPerPage
     postTable <- getPostTable
@@ -74,6 +93,15 @@ showPaginatedPosts postFilter = do
                 & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
     renderDefault (renderPosts posts) >>= serveTemplate
+
+-- | Ensure that the requesting IP is 127.0.0.1, or else 403.
+localhostOnly :: AppHandler ()
+localhostOnly = do
+    reqIp <- rqRemoteAddr <$> getRequest
+    if reqIp == "127.0.0.1" then pass else do
+        modifyResponse $ setResponseCode 403
+        serveTemplate =<< renderDefault [hamlet|<h1>403|]
+        finishWith =<< getResponse
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

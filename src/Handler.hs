@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, Rank2Types #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes, Rank2Types #-}
 
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
@@ -17,9 +17,9 @@ import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Data.Time                (fromGregorian, getCurrentTime)
 import Prelude                  hiding (FilePath)
-import Snap.Core                (MonadSnap, getParam, writeLBS)
+import Snap.Core
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
-import Text.Hamlet              (HtmlUrl)
+import Text.Hamlet              (HtmlUrl, hamlet)
 
 import Application
 import Config
@@ -41,11 +41,12 @@ tagPage = do
 
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
-draftsPage = showAllPaginatedPosts $ with __isDraft (==) True
+draftsPage = localhostOnly >> showAllPaginatedPosts (with __isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
 queuePage = do
+    localhostOnly
     now <- liftIO getCurrentTime
     showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
 
@@ -92,6 +93,15 @@ showAllPaginatedPosts postFilter = do
                 & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
     renderDefault (renderPosts posts) >>= serveTemplate
+
+-- | Ensure that the requesting IP is 127.0.0.1, or else 403.
+localhostOnly :: AppHandler ()
+localhostOnly = do
+    reqIp <- rqRemoteAddr <$> getRequest
+    if reqIp == "127.0.0.1" then pass else do
+        modifyResponse $ setResponseCode 403
+        serveTemplate =<< renderDefault [hamlet|<h1>403|]
+        finishWith =<< getResponse
 
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy

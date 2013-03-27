@@ -3,10 +3,11 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (draftsPage, mainPage, postPage, tagPage) where
+module Handler (draftsPage, mainPage, postPage, queuePage, tagPage) where
 
 import Control.Applicative      ((<$>), (<*>))
 import Control.Lens
+import Control.Monad.IO.Class   (liftIO)
 import Data.ByteString          (ByteString)
 import Data.Maybe               (fromMaybe)
 import Data.Monoid              ((<>))
@@ -14,7 +15,7 @@ import Data.Table
 import Data.Text                (Text, pack, unpack)
 import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import Data.Time.Calendar       (fromGregorian)
+import Data.Time                (fromGregorian, getCurrentTime)
 import Prelude                  hiding (FilePath)
 import Snap.Core                (MonadSnap, getParam, writeLBS)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
@@ -42,6 +43,12 @@ tagPage = do
 draftsPage :: AppHandler ()
 draftsPage = showAllPaginatedPosts $ with __isDraft (==) True
 
+-- | Show all queued, non-draft posts.
+queuePage :: AppHandler ()
+queuePage = do
+    now <- liftIO getCurrentTime
+    showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
+
 -- | Show the post with a given slug posted on a given year/month/day.
 -- As an amusing side-effect of read being permissive, a URL with
 -- /0x7DC/9/0o25/foo will also work. If you rely on that, you're weird.
@@ -67,10 +74,12 @@ postPage = do
                     return $ renderPost post
                 Nothing -> return render404
 
--- | Similar to 'showAllPaginatedPosts', but excludes drafts.
+-- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
-showPaginatedPosts postFilter =
+showPaginatedPosts postFilter = do
+    now <- liftIO getCurrentTime
     showAllPaginatedPosts $ postFilter.with __isDraft (==) False
+        .with __posted (<=) now
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.

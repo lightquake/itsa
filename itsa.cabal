@@ -33,6 +33,7 @@ Executable itsa
     hamlet                    >= 1.0,
     MonadCatchIO-transformers >= 0.2.1,
     mtl                       >= 2,
+    old-locale,
     pandoc                    >= 1.10,
     shakespeare               >= 1.0,
     snap                      >= 0.11,

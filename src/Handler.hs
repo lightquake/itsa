@@ -5,17 +5,17 @@
 
 module Handler (draftsPage, mainPage, postPage, queuePage, tagPage) where
 
-import Control.Applicative      ((<$>), (<*>))
+import Control.Applicative      ((<$>))
 import Control.Lens
 import Control.Monad.IO.Class   (liftIO)
 import Data.ByteString          (ByteString)
 import Data.Maybe               (fromMaybe)
 import Data.Monoid              ((<>))
 import Data.Table
-import Data.Text                (Text, pack, unpack)
+import Data.Text                (Text, unpack)
 import Data.Text.Encoding       (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import Data.Time                (fromGregorian, getCurrentTime)
+import Data.Time                (TimeZone, getCurrentTime)
 import Prelude                  hiding (FilePath)
 import Snap.Core
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
@@ -54,16 +54,17 @@ postPage :: AppHandler ()
 postPage = do
     postSlug <- fromMaybe (error "post route doesn't have :slug parameter?")
              <$> getParamAsText "slug"
-    serveTemplate =<< renderDefault =<< postPage' postSlug
+    tz <- view $ _config._timeZone
+    serveTemplate =<< renderDefault =<< postPage' tz postSlug
       where
         -- Given a slug, either render that post or 404.
-        postPage' :: Text -> AppHandler (HtmlUrl ItsaR)
-        postPage' slug = do
+        postPage' :: TimeZone -> Text -> AppHandler (HtmlUrl ItsaR)
+        postPage' tz slug = do
             postTable <- getPostTable
             case postTable^.at slug of
                 Just post -> do
                     assign _subtitle $ Just $ view _title post
-                    return $ renderPost post
+                    return $ renderPost tz post
                 Nothing -> return render404
 
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
@@ -79,11 +80,12 @@ showAllPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
 showAllPaginatedPosts postFilter = do
     pageNumber <- fromMaybe 1 <$> readParam "page"
     postsPerPage <- view $ _config._postsPerPage
+    tz <- view $ _config._timeZone
     postTable <- getPostTable
     let posts = postTable^..postFilter.group __posted.rows'
                 & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
-    renderDefault (renderPosts posts) >>= serveTemplate
+    renderDefault (renderPosts tz posts) >>= serveTemplate
 
 -- | Ensure that the requesting IP is 127.0.0.1, or else 403.
 localhostOnly :: AppHandler () -> AppHandler ()

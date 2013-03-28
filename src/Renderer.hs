@@ -18,6 +18,8 @@ import Data.Monoid
 import Data.Ord       (comparing)
 import Data.Table     (count, group)
 import Data.Text      (Text)
+import Data.Time      (TimeZone, formatTime, utcToZonedTime)
+import System.Locale  (defaultTimeLocale)
 import Text.Hamlet    (HtmlUrl, hamlet)
 
 import Application
@@ -50,13 +52,13 @@ renderDefault tpl = do
 
 
 -- | Render a series of posts.
-renderPosts :: [Post] -> HtmlUrl ItsaR
-renderPosts posts = [hamlet|$forall post <- posts
-                                            ^{renderPost post}|]
+renderPosts :: TimeZone -> [Post] -> HtmlUrl ItsaR
+renderPosts tz posts = [hamlet|$forall post <- posts
+                                            ^{renderPost tz post}|]
 
 -- | Render an individual post.
-renderPost :: Post -> HtmlUrl ItsaR
-renderPost post = $(hamletRelativeFile "templates/post.hamlet")
+renderPost :: TimeZone -> Post -> HtmlUrl ItsaR
+renderPost tz post = $(hamletRelativeFile "templates/post.hamlet")
 
 -- | Render the tag list, given a list of (tag, frequency) tuples.
 renderTagList :: [(Text, Int)] -> HtmlUrl ItsaR

@@ -5,7 +5,7 @@
     <div .content>#{view _body post}
     <div .metadata>
      <span .time>
-        Posted: post time
+        Posted: #{formatTime defaultTimeLocale "%B %e, %Y" $ utcToZonedTime tz $ __posted post}
 
      <span .tags>
         $with tags <- view _tags post

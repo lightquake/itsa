@@ -107,12 +107,7 @@ serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
     renderRoute :: ItsaR -> [(Text, Text)] -> Text
     renderRoute RootR _ = "/"
     renderRoute (TagR tag) _ = "/tagged/" <> tag
-    renderRoute (PostR year month day slug) _ = "/post/" <> showT year
-                                                <> "/" <> showT month
-                                                <> "/" <> showT day
-                                                <> "/" <> slug
-      where showT :: (Show a) => a -> Text
-            showT = pack . show
+    renderRoute (PostR slug) _ = "/post/" <> slug
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

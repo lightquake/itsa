@@ -30,6 +30,7 @@ Executable itsa
     bytestring                >= 0.9.1,
     containers,
     data-default,
+    fsnotify                  >= 0.0.6,
     hamlet                    >= 1.0,
     MonadCatchIO-transformers >= 0.2.1,
     mtl                       >= 2,

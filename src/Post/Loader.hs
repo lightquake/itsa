@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | This is the module responsible for loading posts from disk, both
 -- the initial load and the reload triggered by file modification.
-module Post.Loader where
+module Post.Loader (watchPostDirectory) where
 
 import           Control.Applicative       ((<$>))
 import           Control.Exception
 import           Control.Monad             (filterM, forM)
 import           Data.Either               (partitionEithers)
+import           Data.IORef                (IORef, atomicWriteIORef, newIORef)
 import           Data.Table
 import qualified Data.Text                 as T
 import           Data.Text.Encoding        (decodeUtf8With)
@@ -17,9 +18,21 @@ import qualified Data.Yaml                 as Yaml
 import qualified Filesystem                as FS
 import           Filesystem.Path.CurrentOS ((</>))
 import qualified Filesystem.Path.CurrentOS as FS
+import           System.FSNotify           (startManager, watchTree)
 import           Text.Pandoc               (def, readMarkdown, writeHtml)
 
 import           Post.Types
+
+-- | Watch the given directory, returning an 'IORef' to a 'Table'
+-- 'Post' that will be automatically updated on events.
+watchPostDirectory :: FS.FilePath -> IO (IORef (Table Post))
+watchPostDirectory path = do
+    manager <- startManager
+    -- Initial load.
+    ref <- newIORef =<< loadPosts path
+    watchTree manager path (const True)
+        (const $ atomicWriteIORef ref =<< loadPosts path)
+    return ref
 
 -- | Do a one-shot load of all posts off of disk. Error messages are
 -- printed to stdout, but do not show up on the webpage!

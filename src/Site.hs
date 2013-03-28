@@ -41,7 +41,7 @@ routes = [ ("/static", serveDirectory "static"),
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    tableRef <- liftIO (loadPosts "posts/" >>= newIORef)
+    tableRef <- liftIO $ watchPostDirectory "posts/"
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes

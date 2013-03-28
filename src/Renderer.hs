@@ -18,7 +18,6 @@ import Data.Monoid
 import Data.Ord       (comparing)
 import Data.Table     (count, group)
 import Data.Text      (Text)
-import Data.Time      (toGregorian, utctDay)
 import Text.Hamlet    (HtmlUrl, hamlet)
 
 import Application
@@ -29,7 +28,7 @@ import RelativeHamlet
 -- | The datatype representing a route.
 data ItsaR = RootR -- ^ The docroot.
            | TagR Text -- ^ Posts related to a tag.
-           | PostR Integer Int Int Text -- ^ An individual post.
+           | PostR Text -- ^ An individual post.
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
@@ -70,5 +69,4 @@ render404 = $(hamletRelativeFile "templates/404.hamlet")
 
 -- | Get the route referring to a post.
 postRouter :: Post -> ItsaR
-postRouter post = PostR year month day $ view _slug post
-  where (year, month, day) = toGregorian . utctDay . view _posted $ post
+postRouter post = PostR $ view _slug post

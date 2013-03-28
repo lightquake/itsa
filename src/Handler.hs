@@ -54,21 +54,15 @@ queuePage = localhostOnly $ do
 -- /0x7DC/9/0o25/foo will also work. If you rely on that, you're weird.
 postPage :: AppHandler ()
 postPage = do
-    -- Can't turn this into a mapM because year is an Integer, but
-    -- month and day are Ints.
-    mYear <- readParam "year"
-    mMonth <- readParam "month"
-    mDay <- readParam "day"
-    mSlug <- getParamAsText "slug"
-    serveTemplate =<< renderDefault =<< fromMaybe (return render404)
-        (postPage' <$> mYear <*> mMonth <*> mDay <*> mSlug)
+    postSlug <- fromMaybe (error "post route doesn't have :slug parameter?")
+             <$> getParamAsText "slug"
+    serveTemplate =<< renderDefault =<< postPage' postSlug
       where
-        -- Given a year, month, day, and slug, either render that post
-        -- or 404.
-        postPage' :: Integer -> Int -> Int -> Text -> AppHandler (HtmlUrl ItsaR)
-        postPage' year month day slug = do
+        -- Given a slug, either render that post or 404.
+        postPage' :: Text -> AppHandler (HtmlUrl ItsaR)
+        postPage' slug = do
             postTable <- getPostTable
-            case postTable^.at (fromGregorian year month day, slug) of
+            case postTable^.at slug of
                 Just post -> do
                     assign _subtitle $ Just $ view _title post
                     return $ renderPost post
@@ -113,12 +107,7 @@ serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
     renderRoute :: ItsaR -> [(Text, Text)] -> Text
     renderRoute RootR _ = "/"
     renderRoute (TagR tag) _ = "/tagged/" <> tag
-    renderRoute (PostR year month day slug) _ = "/post/" <> showT year
-                                                <> "/" <> showT month
-                                                <> "/" <> showT day
-                                                <> "/" <> slug
-      where showT :: (Show a) => a -> Text
-            showT = pack . show
+    renderRoute (PostR slug) _ = "/post/" <> slug
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

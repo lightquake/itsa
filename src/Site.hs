@@ -28,7 +28,7 @@ routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
            ("/tagged/:tagName/page/:1", Handler.tagPage),
            ("/tagged/:tagName", Handler.tagPage),
-           ("/post/:year/:month/:day/:slug", Handler.postPage),
+           ("/post/:slug", Handler.postPage),
            ("/page/:page", Handler.mainPage),
            ("/drafts", Handler.draftsPage),
            ("/drafts/:page", Handler.draftsPage),

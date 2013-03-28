@@ -30,20 +30,20 @@ data Post = Post { __title   :: Text -- ^ The title of the post.
 makeLenses ''Post
 
 instance Tabular Post where
-    type PKT Post = (Day, Text)
+    type PKT Post = Text
     data Key k Post b where
-        PostId :: Key Primary Post (Day, Text)
+        Slug :: Key Primary Post Text
         Tags :: Key Inverted Post (S.Set Text)
 
-    data Tab Post i = PostTab (i Primary (Day, Text)) (i Inverted (S.Set Text))
+    data Tab Post i = PostTab (i Primary Text) (i Inverted (S.Set Text))
 
-    fetch PostId post = (post^._posted.to utctDay, post^._slug)
+    fetch Slug post = post^._slug
     fetch Tags post = post^._tags & S.fromList
 
-    primary = PostId
-    primarily PostId r = r
+    primary = Slug
+    primarily Slug r = r
 
-    mkTab f = PostTab <$> f PostId <*> f Tags
-    forTab (PostTab i t) f = PostTab <$> f PostId i <*> f Tags t
-    ixTab (PostTab i _) PostId = i
+    mkTab f = PostTab <$> f Slug <*> f Tags
+    forTab (PostTab i t) f = PostTab <$> f Slug i <*> f Tags t
+    ixTab (PostTab i _) Slug = i
     ixTab (PostTab _ t) Tags = t

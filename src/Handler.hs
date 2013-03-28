@@ -49,9 +49,7 @@ queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
     showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
 
--- | Show the post with a given slug posted on a given year/month/day.
--- As an amusing side-effect of read being permissive, a URL with
--- /0x7DC/9/0o25/foo will also work. If you rely on that, you're weird.
+-- | Show the post with a given slug.
 postPage :: AppHandler ()
 postPage = do
     postSlug <- fromMaybe (error "post route doesn't have :slug parameter?")

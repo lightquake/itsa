@@ -43,20 +43,20 @@ loadPosts dir = do
 loadPost :: FS.FilePath -- ^ Path to the directory containing post data.
             -> IO (Either String Post)
 loadPost directoryPath = handle catcher $ do
+    let Right slug = FS.toText $ FS.dirname (directoryPath </> "post.markdown")
     postText <- decodeUtf8With lenientDecode <$>
                 FS.readFile (directoryPath </> "post.markdown")
     maybeYaml <- Yaml.decodeEither <$>
                  FS.readFile (directoryPath </> "meta.yml")
-    return (maybeYaml >>= Yaml.parseEither (buildPost postText))
+    return (maybeYaml >>= Yaml.parseEither (buildPost slug postText))
     where catcher :: IOError -> IO (Either String Post)
           catcher err = return . Left $ show err
 
 -- | Build an individual post out of the 'Data.Text.Text' representing
 -- the body and the 'Data.Yaml.Object' containing the metadata.
-buildPost :: T.Text -> Yaml.Object -> Yaml.Parser Post
-buildPost body o = do
+buildPost :: T.Text -> T.Text -> Yaml.Object -> Yaml.Parser Post
+buildPost slug body o = do
     title <- o .: "title"
-    slug <- o .: "slug"
     tags <- o .:? "tags" .!= []
     isDraft <- o .:? "draft" .!= True
     posted <- zonedTimeToUTC . read <$> o .: "posted"

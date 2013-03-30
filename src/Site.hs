@@ -9,14 +9,16 @@ module Site
   ) where
 
 ------------------------------------------------------------------------------
-import           Control.Applicative ((<$>))
-import           Control.Monad.IO.Class   (liftIO)
-import           Data.ByteString          (ByteString)
+import           Control.Applicative    ((<$>))
+import           Control.Monad.IO.Class (liftIO)
+import           Data.ByteString        (ByteString)
 import           Data.IORef
-import           Data.Yaml                (decodeEither)
-import           Filesystem               as FS
+import           Data.Yaml              (decodeEither)
+import qualified Filesystem             as FS
+import qualified Filesystem.Path        as FS
 import           Snap.Snaplet
 import           Snap.Util.FileServe
+import           System.FSNotify        (startManager, watchTree)
 
 import           Application
 import qualified Handler
@@ -41,8 +43,18 @@ routes = [ ("/static", serveDirectory "static"),
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    tableRef <- liftIO $ watchPostDirectory "posts/"
+    tableRef <- liftIO $ buildWatcher loadPosts "posts/"
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes
     return $ App tableRef config Nothing
+
+-- | Given a function that loads data from a path and a path, set up a
+-- watcher to continually load data into an 'IORef'.
+buildWatcher :: (FS.FilePath -> IO a) -> FS.FilePath -> IO (IORef a)
+buildWatcher loader path = do
+    manager <- startManager
+    ref <- newIORef =<< loader path
+    watchTree manager path (const True)
+        (const $ atomicWriteIORef ref =<< loader path)
+    return ref

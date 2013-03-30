@@ -61,9 +61,10 @@ buildPost slug body o = do
     tags <- o .:? "tags" .!= []
     isDraft <- o .:? "draft" .!= True
     posted <- zonedTimeToUTC . read <$> o .: "posted"
-    return Post { __title = title,
-                  __slug = slug,
-                  __tags = tags,
-                  __isDraft = isDraft,
-                  __body = writeHtml def . readMarkdown def . T.unpack $ body,
-                  __posted = posted}
+    return Post { __postTitle = title,
+                  __postSlug = slug,
+                  __postTags = tags,
+                  __postIsDraft = isDraft,
+                  __postBody = writeHtml def . readMarkdown def . T.unpack
+                               $ body,
+                  __postPosted = posted}

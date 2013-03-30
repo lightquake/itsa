@@ -7,7 +7,7 @@ module Handler (draftsPage, mainPage, postPage, queuePage, tagPage) where
 
 import Control.Applicative      ((<$>))
 import Control.Lens
-import Control.Monad.IO.Class   (liftIO)
+import Control.Monad.Reader
 import Data.ByteString          (ByteString)
 import Data.Maybe               (fromMaybe)
 import Data.Monoid              ((<>))
@@ -41,13 +41,14 @@ tagPage = do
 
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
-draftsPage = localhostOnly $ showAllPaginatedPosts (with __isDraft (==) True)
+draftsPage = localhostOnly $ showAllPaginatedPosts (withL _isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
 queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ with __posted (>) now.with __isDraft (==) False
+    showAllPaginatedPosts $ withL _posted (>) now
+        .withL _isDraft (==) False
 
 -- | Show the post with a given slug.
 postPage :: AppHandler ()
@@ -71,8 +72,8 @@ postPage = do
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
 showPaginatedPosts postFilter = do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ postFilter.with __isDraft (==) False
-        .with __posted (<=) now
+    showAllPaginatedPosts $ postFilter.withL _isDraft (==) False
+        .withL _posted (<=) now
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.
@@ -82,7 +83,7 @@ showAllPaginatedPosts postFilter = do
     postsPerPage <- view $ _config._postsPerPage
     tz <- view $ _config._timeZone
     postTable <- getPostTable
-    let posts = postTable^..postFilter.group __posted.rows'
+    let posts = postTable^..postFilter.group (^._posted).rows'
                 & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
     renderDefault (renderPosts tz posts) >>= serveTemplate
@@ -114,3 +115,8 @@ getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param
 
 readParam :: (MonadSnap m, Read a) => ByteString -> m (Maybe a)
 readParam param = fmap (read . unpack) <$> getParamAsText param
+
+-- | Like 'with', but taking a lens as its first argument.
+withL :: (Ord a) => Getting a s t a b -> (forall x. Ord x => x -> x -> Bool)
+         -> a -> Simple Lens (Table s) (Table s)
+withL l = with (^.l)

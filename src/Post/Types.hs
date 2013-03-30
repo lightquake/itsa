@@ -1,8 +1,8 @@
 {-# LANGUAGE GADTs, OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 {-# OPTIONS_HADDOCK prune #-}
 
--- | Here we define all the datatypes relevant to a post, which mostly
--- consist of the 'Post' type itself and a 'Tabular' instance.
+-- | Here we define all the datatypes relevant to a post, which
+-- consists of the 'Post' type itself and a 'Tabular' instance.
 module Post.Types where
 
 import           Control.Applicative
@@ -13,9 +13,8 @@ import           Data.Text           (Text)
 import           Data.Time
 import           Text.Blaze.Html     (Html)
 
--- | All the information corresponding to a post. Note that the tuple
--- of slug and post date should be unique, or otherwise bad things
--- will happen. This is not currently enforced, but should be!
+-- | All the information corresponding to a post. Note that the slug
+-- is guaranteed to be unique, since it's the directory name.
 data Post = Post { __title   :: Text -- ^ The title of the post.
                  , __slug    :: Text -- ^ The 'slug', which appears in
                                     -- the URL. This should never

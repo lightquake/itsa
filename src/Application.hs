@@ -21,6 +21,10 @@ data App = App
                                          -- stored in an IORef so that
                                          -- the reloader can reload it
                                          -- automatically.
+      __pageTable :: IORef (Table Page), -- ^ The table of pages;
+                                         -- stored in an IORef so that
+                                         -- the reloader can reload it
+                                         -- automatically.
       __config    :: Config, -- ^ Configuration data.
       __subtitle  :: Maybe Text -- ^ The 'subtitle' of the current
                                 -- page, which is either set by a

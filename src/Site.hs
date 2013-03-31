@@ -13,6 +13,7 @@ import           Control.Applicative    ((<$>))
 import           Control.Monad.IO.Class (liftIO)
 import           Data.ByteString        (ByteString)
 import           Data.IORef
+import           Data.Table             (fromList)
 import           Data.Yaml              (decodeEither)
 import qualified Filesystem             as FS
 import qualified Filesystem.Path        as FS
@@ -43,7 +44,7 @@ routes = [ ("/static", serveDirectory "static"),
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
-    tableRef <- liftIO $ buildWatcher loadPosts "posts/"
+    tableRef <- liftIO $ buildWatcher (fmap fromList . loadPosts) "posts/"
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes

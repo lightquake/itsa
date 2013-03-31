@@ -7,7 +7,6 @@ import           Control.Applicative       ((<$>))
 import           Control.Exception
 import           Control.Monad             (filterM, forM)
 import           Data.Either               (partitionEithers)
-import           Data.Table
 import qualified Data.Text                 as T
 import           Data.Text.Encoding        (decodeUtf8With)
 import           Data.Text.Encoding.Error  (lenientDecode)
@@ -23,13 +22,12 @@ import           Post.Types
 
 -- | Do a one-shot load of all objects off of disk. Error messages are
 -- printed to stdout.
-loadObjects :: (Tabular a) =>
-               (FS.FilePath -> IO (Either String a))
+loadObjects :: (FS.FilePath -> IO (Either String a))
                -- ^ The \'loader\' function, which takes the
                -- subdirectory.
                -> FS.FilePath
                -- ^ Path to the directory containing object folders.
-               -> IO (Table a)
+               -> IO [a]
 loadObjects loader dir = do
     subdirectories <- FS.listDirectory dir >>= filterM FS.isDirectory
     (errors, posts) <-
@@ -40,14 +38,14 @@ loadObjects loader dir = do
                                FS.encodeString subdir ++ ": " ++ errMsg
                 Right post -> return . Right $ post
     mapM_ putStrLn errors
-    return $ fromList posts
+    return posts
 
-loadPosts :: FS.FilePath -> IO (Table Post)
+loadPosts :: FS.FilePath -> IO [Post]
 loadPosts = loadObjects $ \subdir -> loadObject buildPost
                                      (subdir </> "post.markdown")
                                      (subdir </> "meta.yml")
 
-loadPages :: FS.FilePath -> IO (Table Page)
+loadPages :: FS.FilePath -> IO [Page]
 loadPages = loadObjects $ \subdir -> loadObject buildPage
                                      (subdir </> "page.markdown")
                                      (subdir </> "meta.yml")

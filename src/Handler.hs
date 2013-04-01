@@ -3,7 +3,8 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (draftsPage, mainPage, postPage, queuePage, tagPage) where
+module Handler (draftsPage, mainPage, postPage, queuePage, tagPage, pagePage)
+       where
 
 import Control.Applicative      ((<$>))
 import Control.Lens
@@ -68,6 +69,22 @@ postPage = do
                     return $ renderPost tz post
                 Nothing -> return render404
 
+pagePage :: AppHandler ()
+pagePage = do
+    pageName <- fromMaybe (error "page route doesn't have :pageName parameter?")
+                <$> getParamAsText "pageName"
+    serveTemplate =<< renderDefault =<< page' pageName
+    where
+      page' :: Text -> AppHandler (HtmlUrl ItsaR)
+      page' slug = do
+          pageTable <- getPageTable
+          case pageTable^.at slug of
+               Just page -> do
+                   assign _subtitle $ Just $ view _title page
+                   return $ renderPage page
+               Nothing -> return render404
+
+
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
 showPaginatedPosts postFilter = do
@@ -109,6 +126,7 @@ serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
     renderRoute RootR _ = "/"
     renderRoute (TagR tag) _ = "/tagged/" <> tag
     renderRoute (PostR slug) _ = "/post/" <> slug
+    renderRoute (PageR slug) _ = "/page/" <> slug
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

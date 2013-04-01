@@ -36,6 +36,10 @@ data App = App
 getPostTable :: (MonadState App m, MonadIO m) => m (Table Post)
 getPostTable = gets __postTable >>= liftIO . readIORef
 
+-- | Get the 'Table' 'Page' out of anything that has an 'App' as state.
+getPageTable :: (MonadState App m, MonadIO m) => m (Table Page)
+getPageTable =  gets __pageTable >>= liftIO . readIORef
+
 makeLenses ''App
 
 ------------------------------------------------------------------------------

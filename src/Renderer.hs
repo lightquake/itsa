@@ -9,6 +9,7 @@ module Renderer (ItsaR(..),
                  renderDefault,
                  renderPosts,
                  renderPost,
+                 renderPage,
                  renderTagList,
                  render404) where
 
@@ -31,6 +32,7 @@ import RelativeHamlet
 data ItsaR = RootR -- ^ The docroot.
            | TagR Text -- ^ Posts related to a tag.
            | PostR Text -- ^ An individual post.
+           | PageR Text -- ^ An individual page.
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
@@ -60,6 +62,10 @@ renderPosts tz posts = [hamlet|$forall post <- posts
 renderPost :: TimeZone -> Post -> HtmlUrl ItsaR
 renderPost tz post = $(hamletRelativeFile "templates/post.hamlet")
 
+-- | Render a page; i.e., a bit of static text that's not a post.
+renderPage :: Page -> HtmlUrl ItsaR
+renderPage page = $(hamletRelativeFile "templates/page.hamlet")
+
 -- | Render the tag list, given a list of (tag, frequency) tuples.
 renderTagList :: [(Text, Int)] -> HtmlUrl ItsaR
 renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
@@ -72,3 +78,7 @@ render404 = $(hamletRelativeFile "templates/404.hamlet")
 -- | Get the route referring to a post.
 postRouter :: Post -> ItsaR
 postRouter post = PostR $ view _slug post
+
+-- | Get the route referring to a page.
+pageRouter :: Page -> ItsaR
+pageRouter page = PageR $ view _slug page

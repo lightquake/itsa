@@ -17,6 +17,7 @@ import           Data.Table             (fromList)
 import           Data.Yaml              (decodeEither)
 import qualified Filesystem             as FS
 import qualified Filesystem.Path        as FS
+import           Snap.Core              (ifTop)
 import           Snap.Snaplet
 import           Snap.Util.FileServe
 import           System.FSNotify        (startManager, watchTree)
@@ -37,6 +38,7 @@ routes = [ ("/static", serveDirectory "static"),
            ("/drafts/:page", Handler.draftsPage),
            ("/queue", Handler.queuePage),
            ("/queue/:page", Handler.queuePage),
+           ("/:pageName", ifTop Handler.pagePage),
            ("/", Handler.mainPage)
          ]
 

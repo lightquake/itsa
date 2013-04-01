@@ -1,0 +1,5 @@
+<article>
+  <div .title>
+    <a .title href=@{pageRouter page}>#{view _title page}
+  <div>
+    <div .content>#{view _body page}

@@ -9,7 +9,7 @@ module Renderer (ItsaR(..),
                  renderDefault,
                  renderPosts,
                  renderPost,
-                 renderPage,
+                 renderStaticPage,
                  renderTagList,
                  render404) where
 
@@ -32,7 +32,7 @@ import RelativeHamlet
 data ItsaR = RootR -- ^ The docroot.
            | TagR Text -- ^ Posts related to a tag.
            | PostR Text -- ^ An individual post.
-           | PageR Text -- ^ An individual page.
+           | StaticPageR Text -- ^ An individual page.
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
@@ -45,6 +45,7 @@ renderTwoColumn leftColumn rightColumn
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
     postTable <- getPostTable
+    let
     blogTitle <- view $ _config._blogTitle
     subtitle <- view _subtitle
     let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
@@ -63,8 +64,8 @@ renderPost :: TimeZone -> Post -> HtmlUrl ItsaR
 renderPost tz post = $(hamletRelativeFile "templates/post.hamlet")
 
 -- | Render a page; i.e., a bit of static text that's not a post.
-renderPage :: Page -> HtmlUrl ItsaR
-renderPage page = $(hamletRelativeFile "templates/page.hamlet")
+renderStaticPage :: StaticPage -> HtmlUrl ItsaR
+renderStaticPage page = $(hamletRelativeFile "templates/page.hamlet")
 
 -- | Render the tag list, given a list of (tag, frequency) tuples.
 renderTagList :: [(Text, Int)] -> HtmlUrl ItsaR
@@ -80,5 +81,5 @@ postRouter :: Post -> ItsaR
 postRouter post = PostR $ view _slug post
 
 -- | Get the route referring to a page.
-pageRouter :: Page -> ItsaR
-pageRouter page = PageR $ view _slug page
+pageRouter :: StaticPage -> ItsaR
+pageRouter page = StaticPageR $ view _slug page

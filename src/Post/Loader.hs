@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | This is the module responsible for loading posts from disk, both
 -- the initial load and the reload triggered by file modification.
-module Post.Loader (loadPages, loadPosts) where
+module Post.Loader (loadStaticPages, loadPosts) where
 
 import           Control.Applicative       ((<$>))
 import           Control.Exception
@@ -45,8 +45,8 @@ loadPosts = loadObjects $ \subdir -> loadObject buildPost
                                      (subdir </> "post.markdown")
                                      (subdir </> "meta.yml")
 
-loadPages :: FS.FilePath -> IO [Page]
-loadPages = loadObjects $ \subdir -> loadObject buildPage
+loadStaticPages :: FS.FilePath -> IO [StaticPage]
+loadStaticPages = loadObjects $ \subdir -> loadObject buildStaticPage
                                      (subdir </> "page.markdown")
                                      (subdir </> "meta.yml")
 
@@ -87,13 +87,13 @@ buildPost slug body o = do
 
 -- | Build a page out of the 'T.Text' representing the slug and body
 -- and the 'Yaml.Object' object containing the metadata.
-buildPage :: T.Text -> T.Text -> Yaml.Object -> Yaml.Parser Page
-buildPage slug body o = do
+buildStaticPage :: T.Text -> T.Text -> Yaml.Object -> Yaml.Parser StaticPage
+buildStaticPage slug body o = do
     title <- o .: "title"
     shortTitle <- o .:? "short-title" .!= title
-    return Page { __pageShortTitle = shortTitle
-                , __pageTitle = title
-                , __pageSlug = slug
-                , __pageBody = writeHtml def . readMarkdown def . T.unpack
-                               $ body
+    return StaticPage { __pageShortTitle = shortTitle
+                      , __pageTitle = title
+                      , __pageSlug = slug
+                      , __pageBody = writeHtml def . readMarkdown def . T.unpack
+                                     $ body
                 }

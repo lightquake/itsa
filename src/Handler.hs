@@ -3,7 +3,7 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (draftsPage, mainPage, postPage, queuePage, tagPage, pagePage)
+module Handler (draftsPage, mainPage, postPage, queuePage, tagPage, staticPage)
        where
 
 import Control.Applicative      ((<$>))
@@ -69,19 +69,19 @@ postPage = do
                     return $ renderPost tz post
                 Nothing -> return render404
 
-pagePage :: AppHandler ()
-pagePage = do
+staticPage :: AppHandler ()
+staticPage = do
     pageName <- fromMaybe (error "page route doesn't have :pageName parameter?")
                 <$> getParamAsText "pageName"
     serveTemplate =<< renderDefault =<< page' pageName
     where
       page' :: Text -> AppHandler (HtmlUrl ItsaR)
       page' slug = do
-          pageTable <- getPageTable
-          case pageTable^.at slug of
+          staticPageTable <- getStaticPageTable
+          case staticPageTable^.at slug of
                Just page -> do
                    assign _subtitle $ Just $ view _title page
-                   return $ renderPage page
+                   return $ renderStaticPage page
                Nothing -> return render404
 
 
@@ -126,7 +126,7 @@ serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
     renderRoute RootR _ = "/"
     renderRoute (TagR tag) _ = "/tagged/" <> tag
     renderRoute (PostR slug) _ = "/post/" <> slug
-    renderRoute (PageR slug) _ = "/page/" <> slug
+    renderRoute (StaticPageR slug) _ = "/page/" <> slug
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

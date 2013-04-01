@@ -38,7 +38,7 @@ routes = [ ("/static", serveDirectory "static"),
            ("/drafts/:page", Handler.draftsPage),
            ("/queue", Handler.queuePage),
            ("/queue/:page", Handler.queuePage),
-           ("/:pageName", ifTop Handler.pagePage),
+           ("/:pageName", ifTop Handler.staticPage),
            ("/", Handler.mainPage)
          ]
 
@@ -47,11 +47,12 @@ routes = [ ("/static", serveDirectory "static"),
 app :: SnapletInit App App
 app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     postTableRef <- liftIO $ buildWatcher (fmap fromList . loadPosts) "posts/"
-    pageTableRef <- liftIO $ buildWatcher (fmap fromList . loadPages) "pages/"
+    staticPageTableRef <- liftIO $ buildWatcher
+                          (fmap fromList . loadStaticPages) "pages/"
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes
-    return $ App postTableRef pageTableRef config Nothing
+    return $ App postTableRef staticPageTableRef config Nothing
 
 -- | Given a function that loads data from a path and a path, set up a
 -- watcher to continually load data into an 'IORef'.

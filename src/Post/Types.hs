@@ -4,7 +4,7 @@
 {-# OPTIONS_HADDOCK prune #-}
 
 -- | Here we define all the datatypes relevant to posts and pages,
--- which consists of the 'Post' and 'Page' types themselves and
+-- which consists of the 'Post' and 'StaticPage' types themselves and
 -- 'Tabular' instances.
 module Post.Types where
 
@@ -32,18 +32,18 @@ data Post = Post { __postTitle   :: Text -- ^ The title of the post.
 
 
 -- | All of the information corresponding to a page.
-data Page = Page { __pageShortTitle :: Text -- ^ The 'short title', which
-                                        -- should be short enough to
-                                        -- fit alongside other short
-                                        -- titles.
-                 , __pageTitle      :: Text -- ^ The full title.
-                 , __pageSlug       :: Text -- ^ The slug.
-                 , __pageBody       :: Html -- ^ The page body.
-                 }
+data StaticPage = StaticPage { __pageShortTitle :: Text
+                               -- ^ The 'short title', which should be
+                               -- short enough to fit alongside other
+                               -- short titles.
+                             , __pageTitle      :: Text -- ^ The full title.
+                             , __pageSlug       :: Text -- ^ The slug.
+                             , __pageBody       :: Html -- ^ The page body.
+                             }
 
 
 makeFieldsWith underscoredCamelCaseFields ''Post
-makeFieldsWith underscoredCamelCaseFields ''Page
+makeFieldsWith underscoredCamelCaseFields ''StaticPage
 
 instance Tabular Post where
     type PKT Post = Text
@@ -64,18 +64,18 @@ instance Tabular Post where
     ixTab (PostTab i _) PostSlug = i
     ixTab (PostTab _ t) Tags = t
 
-instance Tabular Page where
-    type PKT Page = Text
-    data Key k Page b where
-        PageSlug :: Key Primary Page Text
+instance Tabular StaticPage where
+    type PKT StaticPage = Text
+    data Key k StaticPage b where
+        StaticPageSlug :: Key Primary StaticPage Text
 
-    data Tab Page i = PageTab (i Primary Text)
+    data Tab StaticPage i = StaticPageTab (i Primary Text)
 
-    fetch PageSlug = view _slug
+    fetch StaticPageSlug = view _slug
 
-    primary = PageSlug
-    primarily PageSlug r = r
+    primary = StaticPageSlug
+    primarily StaticPageSlug r = r
 
-    mkTab f = PageTab <$> f PageSlug
-    forTab (PageTab i) f = PageTab <$> f PageSlug i
-    ixTab (PageTab i) PageSlug = i
+    mkTab f = StaticPageTab <$> f StaticPageSlug
+    forTab (StaticPageTab i) f = StaticPageTab <$> f StaticPageSlug i
+    ixTab (StaticPageTab i) StaticPageSlug = i

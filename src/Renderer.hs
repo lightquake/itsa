@@ -17,7 +17,7 @@ import Control.Lens
 import Data.List      (sortBy)
 import Data.Monoid
 import Data.Ord       (comparing)
-import Data.Table     (count, group)
+import Data.Table     (count, group, rows)
 import Data.Text      (Text)
 import Data.Time      (TimeZone, formatTime, utcToZonedTime)
 import System.Locale  (defaultTimeLocale)
@@ -45,10 +45,11 @@ renderTwoColumn leftColumn rightColumn
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault tpl = do
     postTable <- getPostTable
-    let
+    staticPageTable <- getStaticPageTable
     blogTitle <- view $ _config._blogTitle
     subtitle <- view _subtitle
     let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
+        staticPages = staticPageTable^..group StaticPageSlug .rows
     body <- renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
     return $(hamletRelativeFile "templates/default-layout.hamlet")

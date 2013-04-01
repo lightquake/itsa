@@ -20,4 +20,11 @@
       <header .row>
           <div #title>
             <a .title href=@{RootR}>#{blogTitle}
+          <nav>
+            <ul #page-bar>
+              $forall staticPage <- staticPages
+                <li>
+                  <a href=@{StaticPageR $ view _slug staticPage}>
+                    #{view _shortTitle staticPage}
+
       ^{body}

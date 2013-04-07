@@ -4,7 +4,7 @@
 -- rendered templates and give another template in return. Note that
 -- these templates don't have the routing renderer applied to them for
 -- composability reasons/separation of concerns.
-module Renderer (ItsaR(..),
+module Renderer (ItsaR(..), renderRoute,
                  renderTwoColumn,
                  renderDefault,
                  renderPosts,
@@ -37,6 +37,21 @@ data ItsaR = RootR -- ^ The docroot.
            | PostR Text -- ^ An individual post.
            | StaticPageR Text -- ^ An individual page.
            | RssR -- ^ The RSS feed.
+
+-- | The route renderer. Make sure this synchronizes with the route
+-- parser in Site.hs!
+renderRoute :: ItsaR -- ^ The route to render.
+               -> [(Text, Text)] -- ^ A list of query strings
+                                 -- parameters(?). TODO: Figure out
+                                 -- what these are and use them.
+                                 -- Actually use these.
+               -> Text
+renderRoute RootR _ = "/"
+renderRoute (TagR tag) _ = "/tagged/" <> tag
+renderRoute (PostR slug) _ = "/post/" <> slug
+renderRoute (StaticPageR slug) _ = "/page/" <> slug
+renderRoute RssR _ = "/feed/rss"
+
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.

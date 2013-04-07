@@ -123,16 +123,7 @@ localhostOnly action = do
 -- it, rendering it, and writing as a lazy
 -- 'Data.ByteString.Lazy.ByteString'.
 serveTemplate :: (MonadSnap m) => HtmlUrl ItsaR -> m ()
-serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
- where
-    -- The route renderer. Make sure this synchronizes with the route
-    -- parser in Site.hs!
-    renderRoute :: ItsaR -> [(Text, Text)] -> Text
-    renderRoute RootR _ = "/"
-    renderRoute (TagR tag) _ = "/tagged/" <> tag
-    renderRoute (PostR slug) _ = "/post/" <> slug
-    renderRoute (StaticPageR slug) _ = "/page/" <> slug
-    renderRoute RssR _ = "/feed/rss"
+serveTemplate tpl = writeLBS . renderMarkup $ tpl Renderer.renderRoute
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

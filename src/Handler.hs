@@ -42,14 +42,14 @@ tagPage = do
 
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
-draftsPage = localhostOnly $ showAllPaginatedPosts (withL _isDraft (==) True)
+draftsPage = localhostOnly $ showAllPaginatedPosts (withG _isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
 queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ withL _posted (>) now
-        .withL _isDraft (==) False
+    showAllPaginatedPosts $ withG _posted (>) now
+        .withG _isDraft (==) False
 
 -- | Show the post with a given slug.
 postPage :: AppHandler ()
@@ -89,8 +89,8 @@ staticPage = do
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
 showPaginatedPosts postFilter = do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ postFilter.withL _isDraft (==) False
-        .withL _posted (<=) now
+    showAllPaginatedPosts $ postFilter.withG _isDraft (==) False
+        .withG _posted (<=) now
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.
@@ -135,6 +135,6 @@ readParam :: (MonadSnap m, Read a) => ByteString -> m (Maybe a)
 readParam param = fmap (read . unpack) <$> getParamAsText param
 
 -- | Like 'with', but taking a lens as its first argument.
-withL :: (Ord a) => Getting a s t a b -> (forall x. Ord x => x -> x -> Bool)
+withG :: (Ord a) => Getter s a -> (forall x. Ord x => x -> x -> Bool)
          -> a -> Simple Lens (Table s) (Table s)
-withL l = with (^.l)
+withG l = with (^.l)

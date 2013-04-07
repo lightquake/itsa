@@ -11,28 +11,32 @@ module Renderer (ItsaR(..),
                  renderPost,
                  renderStaticPage,
                  renderTagList,
+                 renderRss,
                  render404) where
 
-import Control.Lens
-import Data.List      (sortBy)
-import Data.Monoid
-import Data.Ord       (comparing)
-import Data.Table     (count, group, rows)
-import Data.Text      (Text)
-import Data.Time      (TimeZone, formatTime, utcToZonedTime)
-import System.Locale  (defaultTimeLocale)
-import Text.Hamlet    (HtmlUrl, hamlet)
+import           Control.Lens
+import           Data.List      (sortBy)
+import qualified Data.Map as Map
+import           Data.Monoid
+import           Data.Ord       (comparing)
+import           Data.Table     (count, group, rows)
+import           Data.Text      (Text)
+import           Data.Time      (TimeZone, formatTime, utcToZonedTime)
+import           System.Locale  (defaultTimeLocale)
+import           Text.Hamlet    (HtmlUrl, hamlet)
+import qualified Text.XML       as XML
 
-import Application
-import Config
-import Post.Types
-import RelativeHamlet
+import           Application
+import           Config
+import           Post.Types
+import           RelativeHamlet
 
 -- | The datatype representing a route.
 data ItsaR = RootR -- ^ The docroot.
            | TagR Text -- ^ Posts related to a tag.
            | PostR Text -- ^ An individual post.
            | StaticPageR Text -- ^ An individual page.
+           | RssR -- ^ The RSS feed.
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
 renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
@@ -73,9 +77,20 @@ renderTagList :: [(Text, Int)] -> HtmlUrl ItsaR
 renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
   where tagList = reverse $ sortBy (comparing snd) unsorted
 
+-- | Render the RSS feed. Note that unlike the others, this is an
+-- 'XML.Document', not an 'HtmlUrl' 'ItsaR' (or monadic wrapper around
+-- one, or function returning one, etc.).
+renderRss :: XML.Document
+renderRss = XML.Document prologue xmlElement []
+    where prologue = XML.Prologue [] Nothing []
+          xmlElement = XML.Element "rss" (Map.fromList [ ("version", "2.0") ])
+                       $(xmlRelativeFile "templates/rss.xhamlet")
+
 -- | Render a 404 page.
 render404 :: HtmlUrl ItsaR
 render404 = $(hamletRelativeFile "templates/404.hamlet")
+
+
 
 -- | Get the route referring to a post.
 postRouter :: Post -> ItsaR

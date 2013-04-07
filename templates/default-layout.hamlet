@@ -31,4 +31,6 @@
 
       <div .row>
         <footer>
-          Footer will go here
+          Powered by <a href="https://github.com/lightquake/itsa">itsa</a>,
+          <a href="http://snapframework.com/">Snap</a>,
+          and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.

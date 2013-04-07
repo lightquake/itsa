@@ -7,3 +7,4 @@
       <title>#{view _title post}
       <guid>#{render $ routePost post}
       <link>#{render $ routePost post}
+      <description>#{toStrict $ Blaze.renderMarkup $ view _body post}

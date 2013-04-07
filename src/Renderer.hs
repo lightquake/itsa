@@ -15,16 +15,18 @@ module Renderer (ItsaR(..), renderRoute,
                  render404) where
 
 import           Control.Lens
-import           Data.List      (sortBy)
-import qualified Data.Map as Map
+import           Data.List                (sortBy)
+import qualified Data.Map                 as Map
 import           Data.Monoid
-import           Data.Ord       (comparing)
-import           Data.Table     (count, group, rows)
-import           Data.Text      (Text)
-import           Data.Time      (TimeZone, formatTime, utcToZonedTime)
-import           System.Locale  (defaultTimeLocale)
-import           Text.Hamlet    (HtmlUrl, hamlet)
-import qualified Text.XML       as XML
+import           Data.Ord                 (comparing)
+import           Data.Table               (count, group, rows)
+import           Data.Text                (Text)
+import           Data.Text.Lazy           (toStrict)
+import           Data.Time                (TimeZone, formatTime, utcToZonedTime)
+import           System.Locale            (defaultTimeLocale)
+import qualified Text.Blaze.Renderer.Text as Blaze
+import           Text.Hamlet              (HtmlUrl, hamlet)
+import qualified Text.XML                 as XML
 
 import           Application
 import           Config

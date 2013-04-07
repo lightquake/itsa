@@ -108,9 +108,9 @@ render404 = $(hamletRelativeFile "templates/404.hamlet")
 
 
 -- | Get the route referring to a post.
-postRouter :: Post -> ItsaR
-postRouter post = PostR $ view _slug post
+routePost :: Post -> ItsaR
+routePost post = PostR $ view _slug post
 
 -- | Get the route referring to a page.
-pageRouter :: StaticPage -> ItsaR
-pageRouter page = StaticPageR $ view _slug page
+routePage :: StaticPage -> ItsaR
+routePage page = StaticPageR $ view _slug page

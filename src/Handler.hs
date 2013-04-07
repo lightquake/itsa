@@ -12,7 +12,6 @@ import           Control.Lens
 import           Control.Monad.Reader
 import           Data.ByteString          (ByteString)
 import           Data.Maybe               (fromMaybe)
-import           Data.Monoid              ((<>))
 import           Data.Table
 import           Data.Text                (Text, unpack)
 import           Data.Text.Encoding       (decodeUtf8With)

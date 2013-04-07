@@ -92,11 +92,11 @@ renderTagList :: [(Text, Int)] -> HtmlUrl ItsaR
 renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
   where tagList = reverse $ sortBy (comparing snd) unsorted
 
--- | Render the RSS feed. Note that unlike the others, this is an
--- 'XML.Document', not an 'HtmlUrl' 'ItsaR' (or monadic wrapper around
--- one, or function returning one, etc.).
-renderRss :: AppHandler XML.Document
-renderRss = do
+-- | Render an RSS feed for a list of posts. Note that unlike the
+-- others, this is an 'XML.Document', not an 'HtmlUrl' 'ItsaR' (or
+-- monadic wrapper around one, or function returning one, etc.).
+renderRss :: [Post] -> AppHandler XML.Document
+renderRss posts = do
     blogTitle <- view $ _config._blogTitle
     let xmlElement = XML.Element "rss" (Map.fromList [ ("version", "2.0") ])
                      $(xmlRelativeFile "templates/rss.xhamlet")

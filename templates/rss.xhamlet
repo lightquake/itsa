@@ -2,3 +2,8 @@
   <title>#{blogTitle}
   <link>#{render RootR}
   <description>#{blogTitle}
+  $forall post <- posts
+    <item>
+      <title>#{view _title post}
+      <guid>#{render $ routePost post}
+      <link>#{render $ routePost post}

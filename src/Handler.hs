@@ -87,7 +87,10 @@ staticPage = do
                Nothing -> return render404
 
 rss :: AppHandler ()
-rss = writeLBS =<< XML.renderLBS XML.def <$> renderRss
+rss = do
+    postTable <- getPostTable
+    let posts = postTable^..group (^._posted).rows' & take 10 . reverse
+    writeLBS =<< XML.renderLBS XML.def <$> renderRss posts
 
 
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.

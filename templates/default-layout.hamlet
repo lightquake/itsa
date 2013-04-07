@@ -28,3 +28,7 @@
                     #{view _shortTitle staticPage}
 
       ^{body}
+
+      <div .row>
+        <footer>
+          Footer will go here

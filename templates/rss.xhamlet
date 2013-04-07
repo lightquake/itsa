@@ -1,1 +1,4 @@
 <channel>
+  <title>#{blogTitle}
+  <link>#{render RootR}
+  <description>#{blogTitle}

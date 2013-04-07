@@ -95,11 +95,14 @@ renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
 -- | Render the RSS feed. Note that unlike the others, this is an
 -- 'XML.Document', not an 'HtmlUrl' 'ItsaR' (or monadic wrapper around
 -- one, or function returning one, etc.).
-renderRss :: XML.Document
-renderRss = XML.Document prologue xmlElement []
+renderRss :: AppHandler XML.Document
+renderRss = do
+    blogTitle <- view $ _config._blogTitle
+    let xmlElement = XML.Element "rss" (Map.fromList [ ("version", "2.0") ])
+                     $(xmlRelativeFile "templates/rss.xhamlet")
+    return $ XML.Document prologue xmlElement []
     where prologue = XML.Prologue [] Nothing []
-          xmlElement = XML.Element "rss" (Map.fromList [ ("version", "2.0") ])
-                       $(xmlRelativeFile "templates/rss.xhamlet")
+          render route = renderRoute route []
 
 -- | Render a 404 page.
 render404 :: HtmlUrl ItsaR

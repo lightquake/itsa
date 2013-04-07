@@ -87,7 +87,7 @@ staticPage = do
                Nothing -> return render404
 
 rss :: AppHandler ()
-rss = writeLBS $ XML.renderLBS XML.def renderRss
+rss = writeLBS =<< XML.renderLBS XML.def <$> renderRss
 
 
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.

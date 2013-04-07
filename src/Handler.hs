@@ -89,7 +89,10 @@ staticPage = do
 rss :: AppHandler ()
 rss = do
     postTable <- getPostTable
-    let posts = postTable^..group (^._posted).rows' & take 10 . reverse
+    now <- liftIO getCurrentTime
+    let posts = postTable^..withL _isDraft (==) False .withL _posted (<=) now
+                .group (^._posted).rows'
+                & take 10 . reverse
     writeLBS =<< XML.renderLBS XML.def <$> renderRss posts
 
 

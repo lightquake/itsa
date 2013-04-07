@@ -25,6 +25,7 @@ Executable itsa
   main-is: Main.hs
 
   Build-depends:
+    base                      >= 4.4      && < 5,
     blaze-html                >= 0.5,
     blaze-markup              >= 0.5,
     bytestring                >= 0.9.1,
@@ -32,6 +33,7 @@ Executable itsa
     data-default,
     fsnotify                  >= 0.0.6,
     hamlet                    >= 1.0,
+    lens                      >= 3.7.6,
     MonadCatchIO-transformers >= 0.2.1,
     mtl                       >= 2,
     old-locale,
@@ -49,16 +51,7 @@ Executable itsa
     time                      >= 1.1,
     transformers              >= 0.3,
     xmlhtml                   >= 0.1,
-    yaml                      >= 0.8
-
-  if flag(old-base)
-    build-depends:
-      base                      >= 4        && < 4.4,
-      lens                      >= 3.7.6    && < 3.8
-  else
-    build-depends:
-      base                      >= 4.4      && < 5,
-      lens                      >= 3.7.6    && < 3.9
+    yaml                      >= 0.8,
 
   if flag(development)
     build-depends:

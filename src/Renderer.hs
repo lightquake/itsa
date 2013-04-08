@@ -42,17 +42,20 @@ data ItsaR = RootR -- ^ The docroot.
 
 -- | The route renderer. Make sure this synchronizes with the route
 -- parser in Site.hs!
-renderRoute :: ItsaR -- ^ The route to render.
+renderRoute :: Text -- ^ The approot.
+               -> ItsaR -- ^ The route to render.
                -> [(Text, Text)] -- ^ A list of query strings
                                  -- parameters(?). TODO: Figure out
                                  -- what these are and use them.
                                  -- Actually use these.
                -> Text
-renderRoute RootR _ = "/"
-renderRoute (TagR tag) _ = "/tagged/" <> tag
-renderRoute (PostR slug) _ = "/post/" <> slug
-renderRoute (StaticPageR slug) _ = "/page/" <> slug
-renderRoute RssR _ = "/feed/rss"
+renderRoute appRoot route query = appRoot <> renderRoute' route query
+  where
+    renderRoute' RootR _ = "/"
+    renderRoute' (TagR tag) _ = "/tagged/" <> tag
+    renderRoute' (PostR slug) _ = "/post/" <> slug
+    renderRoute' (StaticPageR slug) _ = "/page/" <> slug
+    renderRoute' RssR _ = "/feed/rss"
 
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
@@ -100,11 +103,12 @@ renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
 renderRss :: [Post] -> AppHandler XML.Document
 renderRss posts = do
     blogTitle <- view $ _config._blogTitle
+    appRoot <- view $ _config._appRoot
+    let render route = renderRoute appRoot route []
     let xmlElement = XML.Element "rss" rootAttributes
                      $(xmlRelativeFile "templates/rss.xhamlet")
     return $ XML.Document prologue xmlElement []
     where prologue = XML.Prologue [] Nothing []
-          render route = renderRoute route []
           rootAttributes =
               Map.fromList [ ("version", "2.0"),
                              ("xmlns:atom", "http://www.w3.org/2005/Atom")

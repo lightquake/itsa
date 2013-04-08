@@ -127,8 +127,10 @@ localhostOnly action = do
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy
 -- 'Data.ByteString.Lazy.ByteString'.
-serveTemplate :: (MonadSnap m) => HtmlUrl ItsaR -> m ()
-serveTemplate tpl = writeLBS . renderMarkup $ tpl Renderer.renderRoute
+serveTemplate :: HtmlUrl ItsaR -> AppHandler ()
+serveTemplate tpl = do
+    appRoot <- view $ _config._appRoot
+    writeLBS . renderMarkup $ tpl $ Renderer.renderRoute appRoot
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

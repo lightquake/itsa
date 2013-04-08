@@ -7,7 +7,7 @@
 -- separate module from anything that uses hamletRelativeFile due to
 -- how TH staging works.
 
-module RelativeHamlet (hamletRelativeFile, Html) where
+module RelativeHamlet (hamletRelativeFile, xmlRelativeFile, Html) where
 
 import           Control.Applicative        ((<$>))
 import           Data.Maybe                 (mapMaybe)
@@ -15,11 +15,11 @@ import           Filesystem
 import           Filesystem.Path.CurrentOS  hiding (FilePath, null)
 import qualified Filesystem.Path.CurrentOS  as FS
 import           Language.Haskell.TH.Syntax (Exp, Q, qAddDependentFile, qRunIO)
+import           Text.Hamlet                (Html, hamletFile)
+import           Text.Hamlet.XML            (xmlFile)
 
-import           Text.Hamlet                (Html, defaultHamletSettings,
-                                             hamletFileWithSettings,
-                                             hamletRules)
-
+-- | Find the cabal directory,s tarting from the path. If none found,
+-- error.
 findCabalDirFrom :: FS.FilePath -> IO FS.FilePath
 findCabalDirFrom path = do
     files <- filter ((/= ".cabal") . filename) <$> listDirectory path
@@ -33,10 +33,18 @@ findCabalDirFrom path = do
                then error "reached root (not below a .cabal file?)"
                 else findCabalDirFrom canonicalParent
 
--- Load a Hamlet file with a path relative to the .cabal directory.
+-- | Load a Hamlet file with a path relative to the .cabal directory.
 hamletRelativeFile :: String -> Q Exp
-hamletRelativeFile path = do
-    dir <- qRunIO $ getWorkingDirectory >>= findCabalDirFrom
+hamletRelativeFile path = hamletFile =<< getRealPath path
+
+-- | Load an XML Hamlet file with a path relative to the .cabal
+-- directory.
+xmlRelativeFile :: String -> Q Exp
+xmlRelativeFile path = xmlFile =<< getRealPath path
+
+getRealPath :: String -> Q String
+getRealPath path = do
+    dir <- qRunIO $ findCabalDirFrom =<< getWorkingDirectory
     let realPath = encodeString (dir </> decodeString path)
     qAddDependentFile realPath
-    hamletFileWithSettings hamletRules defaultHamletSettings realPath
+    return realPath

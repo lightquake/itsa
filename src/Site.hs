@@ -38,6 +38,7 @@ routes = [ ("/static", serveDirectory "static"),
            ("/drafts/:page", Handler.draftsPage),
            ("/queue", Handler.queuePage),
            ("/queue/:page", Handler.queuePage),
+           ("/feed/rss", Handler.rss),
            ("/:pageName", ifTop Handler.staticPage),
            ("/", Handler.mainPage)
          ]

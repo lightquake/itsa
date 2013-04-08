@@ -3,29 +3,30 @@
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
 
-module Handler (draftsPage, mainPage, postPage, queuePage, tagPage, staticPage)
+module Handler (draftsPage, mainPage, postPage, queuePage, tagPage, rss,
+                staticPage)
        where
 
-import Control.Applicative      ((<$>))
-import Control.Lens
-import Control.Monad.Reader
-import Data.ByteString          (ByteString)
-import Data.Maybe               (fromMaybe)
-import Data.Monoid              ((<>))
-import Data.Table
-import Data.Text                (Text, unpack)
-import Data.Text.Encoding       (decodeUtf8With)
-import Data.Text.Encoding.Error (lenientDecode)
-import Data.Time                (TimeZone, getCurrentTime)
-import Prelude                  hiding (FilePath)
-import Snap.Core
-import Text.Blaze.Renderer.Utf8 (renderMarkup)
-import Text.Hamlet              (HtmlUrl, hamlet)
+import           Control.Applicative      ((<$>))
+import           Control.Lens
+import           Control.Monad.Reader
+import           Data.ByteString          (ByteString)
+import           Data.Maybe               (fromMaybe)
+import           Data.Table
+import           Data.Text                (Text, unpack)
+import           Data.Text.Encoding       (decodeUtf8With)
+import           Data.Text.Encoding.Error (lenientDecode)
+import           Data.Time                (TimeZone, getCurrentTime)
+import           Prelude                  hiding (FilePath)
+import           Snap.Core
+import           Text.Blaze.Renderer.Utf8 (renderMarkup)
+import           Text.Hamlet              (HtmlUrl, hamlet)
+import qualified Text.XML                 as XML
 
-import Application
-import Config
-import Post.Types
-import Renderer
+import           Application
+import           Config
+import           Post.Types
+import           Renderer
 
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: AppHandler ()
@@ -84,6 +85,15 @@ staticPage = do
                    return $ renderStaticPage page
                Nothing -> return render404
 
+rss :: AppHandler ()
+rss = do
+    postTable <- getPostTable
+    now <- liftIO getCurrentTime
+    let posts = postTable^..withG _isDraft (==) False .withG _posted (<=) now
+                .group (^._posted).rows'
+                & take 10 . reverse
+    writeLBS =<< XML.renderLBS XML.def <$> renderRss posts
+
 
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
 showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
@@ -117,16 +127,10 @@ localhostOnly action = do
 -- | Serve a template using Snap by supplying the route renderer to
 -- it, rendering it, and writing as a lazy
 -- 'Data.ByteString.Lazy.ByteString'.
-serveTemplate :: (MonadSnap m) => HtmlUrl ItsaR -> m ()
-serveTemplate tpl = writeLBS . renderMarkup $ tpl renderRoute
- where
-    -- The route renderer. Make sure this synchronizes with the route
-    -- parser in Site.hs!
-    renderRoute :: ItsaR -> [(Text, Text)] -> Text
-    renderRoute RootR _ = "/"
-    renderRoute (TagR tag) _ = "/tagged/" <> tag
-    renderRoute (PostR slug) _ = "/post/" <> slug
-    renderRoute (StaticPageR slug) _ = "/page/" <> slug
+serveTemplate :: HtmlUrl ItsaR -> AppHandler ()
+serveTemplate tpl = do
+    appRoot <- view $ _config._appRoot
+    writeLBS . renderMarkup $ tpl $ Renderer.renderRoute appRoot
 
 getParamAsText :: (MonadSnap m) => ByteString -> m (Maybe Text)
 getParamAsText param = fmap (decodeUtf8With lenientDecode) <$> getParam param

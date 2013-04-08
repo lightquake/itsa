@@ -26,6 +26,9 @@
                 <li>
                   <a href=@{StaticPageR $ view _slug staticPage}>
                     #{view _shortTitle staticPage}
+            <div #rss>
+                <a href=@{RssR}>
+                   <img src="/static/img/rss.png">
 
       ^{body}
 

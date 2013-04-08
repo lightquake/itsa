@@ -100,11 +100,15 @@ renderTagList unsorted = $(hamletRelativeFile "templates/tag-list.hamlet")
 renderRss :: [Post] -> AppHandler XML.Document
 renderRss posts = do
     blogTitle <- view $ _config._blogTitle
-    let xmlElement = XML.Element "rss" (Map.fromList [ ("version", "2.0") ])
+    let xmlElement = XML.Element "rss" rootAttributes
                      $(xmlRelativeFile "templates/rss.xhamlet")
     return $ XML.Document prologue xmlElement []
     where prologue = XML.Prologue [] Nothing []
           render route = renderRoute route []
+          rootAttributes =
+              Map.fromList [ ("version", "2.0"),
+                             ("xmlns:atom", "http://www.w3.org/2005/Atom")
+                           ]
 
 -- | Render a 404 page.
 render404 :: HtmlUrl ItsaR

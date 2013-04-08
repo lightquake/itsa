@@ -4,8 +4,10 @@
 module Post.Loader (loadStaticPages, loadPosts) where
 
 import           Control.Applicative       ((<$>))
-import           Control.Exception
+import           Control.Exception         (handle)
+import           Control.Lens
 import           Control.Monad             (filterM, forM)
+import           Data.Data.Lens
 import           Data.Either               (partitionEithers)
 import qualified Data.Text                 as T
 import           Data.Text.Encoding        (decodeUtf8With)
@@ -16,7 +18,8 @@ import qualified Data.Yaml                 as Yaml
 import qualified Filesystem                as FS
 import           Filesystem.Path.CurrentOS ((</>))
 import qualified Filesystem.Path.CurrentOS as FS
-import           Text.Pandoc               (def, readMarkdown, writeHtml)
+import           Text.Pandoc               (Block (CodeBlock), Inline (Code),
+                                            def, readMarkdown, writeHtml)
 
 import           Post.Types
 
@@ -77,11 +80,24 @@ buildPost slug body o = do
     tags <- o .:? "tags" .!= []
     isDraft <- o .:? "draft" .!= True
     posted <- zonedTimeToUTC . read <$> o .: "posted"
+    language <- o .:? "code-language"
+    -- If the code-language attribute is set, add it to all the code
+    -- blocks and inline code.
+    let addLang attrs@(ident, classes, pairs) = case language of
+            Just lang -> (ident, lang:classes, pairs)
+            Nothing -> attrs
+        blockTransform (CodeBlock attrs code) = CodeBlock (addLang attrs) code
+        blockTransform block = block
+        inlineTransform (Code attrs code) = Code (addLang attrs) code
+        inlineTransform inline = inline
     return Post { __postTitle = title,
                   __postSlug = slug,
                   __postTags = tags,
                   __postIsDraft = isDraft,
-                  __postBody = writeHtml def . readMarkdown def . T.unpack
+                  __postBody = writeHtml def
+                               . over template blockTransform
+                               . over template inlineTransform
+                               . readMarkdown def . T.unpack
                                $ body,
                   __postPosted = posted}
 

@@ -88,15 +88,12 @@ buildPost slug body o = do
             Nothing -> attrs
         blockTransform (CodeBlock attrs code) = CodeBlock (addLang attrs) code
         blockTransform block = block
-        inlineTransform (Code attrs code) = Code (addLang attrs) code
-        inlineTransform inline = inline
     return Post { __postTitle = title,
                   __postSlug = slug,
                   __postTags = tags,
                   __postIsDraft = isDraft,
                   __postBody = writeHtml def
                                . over template blockTransform
-                               . over template inlineTransform
                                . readMarkdown def . T.unpack
                                $ body,
                   __postPosted = posted}

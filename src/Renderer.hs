@@ -80,8 +80,13 @@ renderDefault tpl = do
 
 
 -- | Render a series of posts.
-renderPosts :: TimeZone -> [Post] -> HtmlUrl ItsaR
-renderPosts tz posts = $(hamletRelativeFile "templates/post-list.hamlet")
+renderPosts :: TimeZone -- ^ The time zone to use for displaying timestamps.
+               -> Int -- ^ The current page number.
+               -> Bool -- ^ Whether there's a page with a higher number.
+               -> [Post] -- ^ The posts to render.
+               -> HtmlUrl ItsaR
+renderPosts tz pageNumber hasNext posts =
+    $(hamletRelativeFile "templates/post-list.hamlet")
 
 -- | Render an individual post.
 renderPost :: TimeZone -> Post -> HtmlUrl ItsaR

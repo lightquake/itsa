@@ -110,10 +110,14 @@ showAllPaginatedPosts postFilter = do
     postsPerPage <- view $ _config._postsPerPage
     tz <- view $ _config._timeZone
     postTable <- getPostTable
-    let posts = postTable^..postFilter.group (^._posted).rows'
-                & take postsPerPage . drop ((pageNumber - 1) * postsPerPage)
+    let posts' = postTable^..postFilter.group (^._posted).rows'
+                & take (postsPerPage + 1) . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
-    renderDefault (renderPosts tz posts) >>= serveTemplate
+        -- By taking one more post than is necessary, we can determine
+        -- whether there are more posts to show.
+        hasNext = length posts' > postsPerPage
+        posts = if hasNext then init posts' else posts'
+    renderDefault (renderPosts tz pageNumber hasNext posts) >>= serveTemplate
 
 -- | Ensure that the requesting IP is 127.0.0.1, or else 403.
 localhostOnly :: AppHandler () -> AppHandler ()

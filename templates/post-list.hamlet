@@ -3,13 +3,17 @@ $forall post <- posts
 
 <div .pagination>
   <ul>
+    $if pageNumber > 1
+      <li>
+        <a>Newer
+      <li>
+        <a>#{show $ pageNumber - 1}
+
     <li>
-      <a>Newer
-    <li>
-      <a>7
-    <li>
-      <a>8
-    <li>
-      <a>9
-    <li>
-      <a>Older
+      <a>#{show pageNumber}
+
+    $if hasNext
+      <li>
+        <a>#{show $ pageNumber + 1}
+      <li>
+        <a>Older

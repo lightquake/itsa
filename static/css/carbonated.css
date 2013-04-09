@@ -100,34 +100,24 @@ pre {
 
 /* Stuff for pagination */
 
-div.pagination {
+#pagination {
     padding-bottom: 40px;
-    padding-top: 30px;
+    font-size: 120%;
 }
 
 
-div.pagination ul {
-    list-style-type: none;
+#pagination a {
+    display: inline-block;
     text-align: center;
-}
-div.pagination li {
-    background: white;
-    display: inline;
-}
-
-div.pagination li:first-child { float: left; }
-div.pagination li:last-child { float: right; }
-
-div.pagination a {
     padding: 6px 14px;
     border: 1px solid black;
     margin: 6px 10px;
+    background: white;
 }
 
-div.pagination li.active a {
-    color: black;
-    background: #F0F0F0;
-}
+#pagination #newer { float: left; }
+#pagination #older { float: right; }
+
 
 /* Nav bar */
 nav {
@@ -213,6 +203,17 @@ footer {
     background: rgb(222, 222, 222);
     border-top: 1px solid rgb(200, 200, 200);
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+
+/* Clearfix. I hate CSS. */
+
+.clearfix:before, .clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
 }
 
 

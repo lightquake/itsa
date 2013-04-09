@@ -1,3 +1,2 @@
 $forall post <- posts
-  <article>
-    ^{renderPost post}
+  ^{renderPost tz post}

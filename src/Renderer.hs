@@ -8,6 +8,7 @@ module Renderer (ItsaR(..), renderRoute,
                  renderTwoColumn,
                  renderDefault,
                  renderPosts,
+                 renderPagination,
                  renderPost,
                  renderStaticPage,
                  renderTagList,
@@ -20,6 +21,7 @@ import qualified Data.Map                 as Map
 import           Data.Monoid
 import           Data.Ord                 (comparing)
 import           Data.Table               (count, group, rows)
+import qualified Data.Text as Text
 import           Data.Text                (Text)
 import           Data.Text.Lazy           (toStrict)
 import           Data.Time                (TimeZone, formatTime, utcToZonedTime)
@@ -35,10 +37,14 @@ import           RelativeHamlet
 
 -- | The datatype representing a route.
 data ItsaR = RootR -- ^ The docroot.
-           | TagR Text -- ^ Posts related to a tag.
+           | PageR Int -- ^ An archive page.
+           | TagR Text Int -- ^ Posts related to a tag.
            | PostR Text -- ^ An individual post.
            | StaticPageR Text -- ^ An individual page.
            | RssR -- ^ The RSS feed.
+           | QueueR Int -- ^ Queued posts.
+           | DraftsR Int -- ^ Draft posts.
+
 
 -- | The route renderer. Make sure this synchronizes with the route
 -- parser in Site.hs!
@@ -51,11 +57,17 @@ renderRoute :: Text -- ^ The approot.
                -> Text
 renderRoute appRoot route query = appRoot <> renderRoute' route query
   where
-    renderRoute' RootR _ = "/"
-    renderRoute' (TagR tag) _ = "/tagged/" <> tag
+    renderRoute' RootR _ = ""
+    renderRoute' (PageR page) _ = pager page
+    renderRoute' (TagR tag page) _ = "/tagged/" <> tag <> "/page" <> pager page
     renderRoute' (PostR slug) _ = "/post/" <> slug
     renderRoute' (StaticPageR slug) _ = "/page/" <> slug
     renderRoute' RssR _ = "/feed/rss"
+    renderRoute' (QueueR page) _ = "/queue" <> pager page
+    renderRoute' (DraftsR page) _ = "/drafts" <> pager page
+    pager 1 = ""
+    pager n = "/page/" <> showT n
+    showT = Text.pack . show
 
 
 -- | 'Top-level' renderer that puts its arguments in the default layout.
@@ -80,9 +92,20 @@ renderDefault tpl = do
 
 
 -- | Render a series of posts.
-renderPosts :: TimeZone -> [Post] -> HtmlUrl ItsaR
+renderPosts :: TimeZone -- ^ The time zone to use for displaying timestamps.
+               -> [Post] -- ^ The posts to render, from first to last.
+               -> HtmlUrl ItsaR
 renderPosts tz posts = [hamlet|$forall post <- posts
-                                            ^{renderPost tz post}|]
+                                               ^{renderPost tz post}|]
+
+-- | Render the pagination footer; since the page links can vary
+-- depending on the route, we take the router as an argument.
+renderPagination :: (Int -> ItsaR) -- ^ The router for displaying a given page.
+                    -> Int -- ^ The current page.
+                    -> Bool -- ^ Whether there's a next page.
+                    -> HtmlUrl ItsaR
+renderPagination pageRouter pageNumber hasNext =
+    $(hamletRelativeFile "templates/pagination.hamlet")
 
 -- | Render an individual post.
 renderPost :: TimeZone -> Post -> HtmlUrl ItsaR

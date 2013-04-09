@@ -2,18 +2,19 @@ $forall post <- posts
   ^{renderPost tz post}
 
 <div .pagination>
-  <ul>
-    $if pageNumber > 1
-      <li>
-        <a>Newer
-      <li>
-        <a>#{show $ pageNumber - 1}
+  $if (pageNumber > 1) || hasNext
+    <ul>
+      $if pageNumber > 1
+        <li>
+          <a>Newer
+        <li>
+          <a>#{show $ pageNumber - 1}
 
-    <li>
-      <a>#{show pageNumber}
+      <li>
+        <a>#{show pageNumber}
 
-    $if hasNext
-      <li>
-        <a>#{show $ pageNumber + 1}
-      <li>
-        <a>Older
+      $if hasNext
+        <li>
+          <a>#{show $ pageNumber + 1}
+        <li>
+          <a>Older

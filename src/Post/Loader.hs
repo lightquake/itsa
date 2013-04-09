@@ -18,8 +18,8 @@ import qualified Data.Yaml                 as Yaml
 import qualified Filesystem                as FS
 import           Filesystem.Path.CurrentOS ((</>))
 import qualified Filesystem.Path.CurrentOS as FS
-import           Text.Pandoc               (Block (CodeBlock), Inline (Code),
-                                            def, readMarkdown, writeHtml)
+import           Text.Pandoc               (Block (CodeBlock), def,
+                                            readMarkdown, writeHtml)
 
 import           Post.Types
 
@@ -43,11 +43,14 @@ loadObjects loader dir = do
     mapM_ putStrLn errors
     return posts
 
+-- | Load a list of posts from disk.
 loadPosts :: FS.FilePath -> IO [Post]
 loadPosts = loadObjects $ \subdir -> loadObject buildPost
                                      (subdir </> "post.markdown")
                                      (subdir </> "meta.yml")
 
+-- | Load a list of static pages (i.e., pages rendered as if they were
+-- posts that aren't actually posts) from disk.
 loadStaticPages :: FS.FilePath -> IO [StaticPage]
 loadStaticPages = loadObjects $ \subdir -> loadObject buildStaticPage
                                      (subdir </> "page.markdown")

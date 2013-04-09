@@ -81,8 +81,7 @@ renderDefault tpl = do
 
 -- | Render a series of posts.
 renderPosts :: TimeZone -> [Post] -> HtmlUrl ItsaR
-renderPosts tz posts = [hamlet|$forall post <- posts
-                                            ^{renderPost tz post}|]
+renderPosts tz posts = $(hamletRelativeFile "templates/post-list.hamlet")
 
 -- | Render an individual post.
 renderPost :: TimeZone -> Post -> HtmlUrl ItsaR

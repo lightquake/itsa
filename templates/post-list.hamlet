@@ -1,3 +1,15 @@
 $forall post <- posts
-  <article>
-    ^{renderPost post}
+  ^{renderPost tz post}
+
+<div .pagination>
+  <ul>
+    <li>
+      <a>Newer
+    <li>
+      <a>7
+    <li>
+      <a>8
+    <li>
+      <a>9
+    <li>
+      <a>Older

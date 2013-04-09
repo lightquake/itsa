@@ -1,9 +1,2 @@
 $forall post <- posts
   ^{renderPost tz post}
-
-<div #pagination .clearfix>
-  $if pageNumber > 1
-    <a id=newer>Newer
-
-  $if hasNext
-    <a id=older>Older

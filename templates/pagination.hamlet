@@ -1,0 +1,6 @@
+<div #pagination .clearfix>
+  $if pageNumber > 1
+    <a href=@{pageRouter $ pageNumber - 1} id=newer>Newer
+
+  $if hasNext
+    <a href=@{pageRouter $ pageNumber + 1} id=older>Older

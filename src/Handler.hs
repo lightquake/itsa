@@ -30,7 +30,7 @@ import           Renderer
 
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: AppHandler ()
-mainPage = showPaginatedPosts id
+mainPage = showPaginatedPosts PageR id
 
 -- | Show posts with a given tag.
 tagPage :: AppHandler ()
@@ -39,17 +39,19 @@ tagPage = do
     assign _subtitle mTagName
     case mTagName of
         Nothing -> error "???? failure to get tag name from tag page"
-        Just tagName -> showPaginatedPosts $ withAny Tags [tagName]
+        Just tagName -> showPaginatedPosts (TagR tagName) $
+                        withAny Tags [tagName]
 
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
-draftsPage = localhostOnly $ showAllPaginatedPosts (withG _isDraft (==) True)
+draftsPage = localhostOnly $
+             showAllPaginatedPosts QueueR (withG _isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
 queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ withG _posted (>) now
+    showAllPaginatedPosts DraftsR $ withG _posted (>) now
         .withG _isDraft (==) False
 
 -- | Show the post with a given slug.
@@ -96,16 +98,24 @@ rss = do
 
 
 -- | Similar to 'showAllPaginatedPosts', but excludes drafts and queued posts.
-showPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
-showPaginatedPosts postFilter = do
+showPaginatedPosts :: (Int -> ItsaR) -- ^ A function from page numbers
+                                     -- to URLs.
+                      -> Lens' (Table Post) (Table Post)
+                      -- ^ The lens to apply to the post table.
+                      -> AppHandler ()
+showPaginatedPosts pageRouter postFilter = do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts $ postFilter.withG _isDraft (==) False
+    showAllPaginatedPosts pageRouter $ postFilter.withG _isDraft (==) False
         .withG _posted (<=) now
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.
-showAllPaginatedPosts :: Lens' (Table Post) (Table Post) -> AppHandler ()
-showAllPaginatedPosts postFilter = do
+showAllPaginatedPosts :: (Int -> ItsaR) -- ^ A function from page
+                         -- numbers to URLs.
+                         -> Lens' (Table Post) (Table Post)
+                         -- ^ The lens to apply to the post table.
+                         -> AppHandler ()
+showAllPaginatedPosts pageRouter postFilter = do
     pageNumber <- fromMaybe 1 <$> readParam "page"
     postsPerPage <- view $ _config._postsPerPage
     tz <- view $ _config._timeZone
@@ -117,7 +127,9 @@ showAllPaginatedPosts postFilter = do
         -- whether there are more posts to show.
         hasNext = length posts' > postsPerPage
         posts = if hasNext then init posts' else posts'
-    renderDefault (renderPosts tz pageNumber hasNext posts) >>= serveTemplate
+    let pagination = renderPagination pageRouter pageNumber hasNext
+    serveTemplate =<< renderDefault
+        (liftM2 (>>) (renderPosts tz posts) pagination)
 
 -- | Ensure that the requesting IP is 127.0.0.1, or else 403.
 localhostOnly :: AppHandler () -> AppHandler ()

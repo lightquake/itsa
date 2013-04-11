@@ -53,7 +53,7 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yaml")
     addRoutes routes
-    return $ App postTableRef staticPageTableRef config Nothing
+    config `seq` return $ App postTableRef staticPageTableRef config Nothing
 
 -- | Given a function that loads data from a path and a path, set up a
 -- watcher to continually load data into an 'IORef'.

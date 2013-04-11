@@ -14,8 +14,9 @@ data Config = Config {
     __postsPerPage :: Int, -- ^ Number of posts to display on a page.
     __blogTitle :: Text, -- ^ Title of the blog.
     __timeZone :: TimeZone, -- ^ Time zone to display times in.
-    __appRoot :: Text -- ^ The base for all URLs used throughout,
+    __appRoot :: Text, -- ^ The base for all URLs used throughout,
                       -- without the trailing slash.
+    __analytics :: Maybe Text -- ^ A Google Analytics ID.
 }
 
 makeLenses ''Config
@@ -25,6 +26,7 @@ instance FromJSON Config where
                            <*> o .: "blog-title"
                            <*> fmap read (o .: "time-zone")
                            <*> fmap stripSlash (o .: "app-root")
+                           <*> o .:? "analytics"
       where
         stripSlash url = fromMaybe url (stripSuffix "/" url)
     parseJSON _ = fail "Expected an object"

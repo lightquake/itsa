@@ -84,6 +84,7 @@ renderDefault tpl = do
     staticPageTable <- getStaticPageTable
     blogTitle <- view $ _config._blogTitle
     subtitle <- view _subtitle
+    mAnalytics <- view $ _config._analytics
     let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
         staticPages = staticPageTable^..group StaticPageSlug .rows
     body <- renderTwoColumn tpl

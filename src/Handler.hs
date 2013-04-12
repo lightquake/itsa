@@ -134,6 +134,9 @@ showAllPaginatedPosts pageRouter postFilter = do
 -- | Ensure that the requesting IP is 127.0.0.1, or else 403.
 localhostOnly :: AppHandler () -> AppHandler ()
 localhostOnly action = do
+    -- Set the rqRemoteAddr to the forwarded one so this works behind
+    -- reverse proxies.
+    ipHeaderFilter
     reqIp <- rqRemoteAddr <$> getRequest
     if reqIp == "127.0.0.1" then action else do
         modifyResponse $ setResponseCode 403

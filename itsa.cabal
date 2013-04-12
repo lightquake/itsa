@@ -45,7 +45,7 @@ Executable itsa
     snap-loader-static        >= 0.9,
     system-fileio             >= 0.3,
     system-filepath           >= 0.4,
-    tables                    >= 0.2,
+    tables                    >= 0.3.1,
     template-haskell,
     text                      >= 0.11,
     time                      >= 1.1,

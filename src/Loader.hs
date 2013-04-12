@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | This is the module responsible for loading posts from disk, both
 -- the initial load and the reload triggered by file modification.
-module Post.Loader (loadStaticPages, loadPosts) where
+module Loader (loadStaticPages, loadPosts) where
 
 import           Control.Applicative       ((<$>))
 import           Control.Exception         (handle)
@@ -21,7 +21,7 @@ import qualified Filesystem.Path.CurrentOS as FS
 import           Text.Pandoc               (Block (CodeBlock), def,
                                             readMarkdown, writeHtml)
 
-import           Post.Types
+import           Types
 
 -- | Do a one-shot load of all objects off of disk. Error messages are
 -- printed to stdout.

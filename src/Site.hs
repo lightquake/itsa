@@ -24,7 +24,7 @@ import           System.FSNotify        (startManager, watchTree)
 
 import           Application
 import qualified Handler
-import           Post.Loader
+import           Loader
 
 ------------------------------------------------------------------------------
 -- | The application's routes.

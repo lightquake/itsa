@@ -14,7 +14,7 @@ import Data.Text              (Text)
 import Snap.Snaplet
 
 import Config
-import Post.Types
+import Types
 ------------------------------------------------------------------------------
 data App = App
     { __postTable :: IORef (Table Post), -- ^ The table of posts;

@@ -6,7 +6,7 @@
 -- | Here we define all the datatypes relevant to posts and pages,
 -- which consists of the 'Post' and 'StaticPage' types themselves and
 -- 'Tabular' instances.
-module Post.Types where
+module Types where
 
 import           Control.Applicative
 import           Control.Lens

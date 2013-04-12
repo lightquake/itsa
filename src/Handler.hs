@@ -25,8 +25,8 @@ import qualified Text.XML                 as XML
 
 import           Application
 import           Config
-import           Post.Types
 import           Renderer
+import           Types
 
 -- | This handler renders the main page; i.e., the most recent posts.
 mainPage :: AppHandler ()

@@ -21,8 +21,8 @@ import qualified Data.Map                 as Map
 import           Data.Monoid
 import           Data.Ord                 (comparing)
 import           Data.Table               (count, group, rows)
-import qualified Data.Text as Text
 import           Data.Text                (Text)
+import qualified Data.Text                as Text
 import           Data.Text.Lazy           (toStrict)
 import           Data.Time                (TimeZone, formatTime, utcToZonedTime)
 import           System.Locale            (defaultTimeLocale)
@@ -32,8 +32,8 @@ import qualified Text.XML                 as XML
 
 import           Application
 import           Config
-import           Post.Types
 import           RelativeHamlet
+import           Types
 
 -- | The datatype representing a route.
 data ItsaR = RootR -- ^ The docroot.

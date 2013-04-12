@@ -46,7 +46,7 @@ routes = [ ("/static", serveDirectory "static"),
 ------------------------------------------------------------------------------
 -- | The application initializer.
 app :: SnapletInit App App
-app = makeSnaplet "app" "An snaplet example application." Nothing $ do
+app = makeSnaplet "itsa" "A simple blog engine." Nothing $ do
     postTableRef <- liftIO $ buildWatcher (fmap fromList . loadPosts) "posts/"
     staticPageTableRef <- liftIO $ buildWatcher
                           (fmap fromList . loadStaticPages) "pages/"

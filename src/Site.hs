@@ -51,7 +51,7 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     staticPageTableRef <- liftIO $ buildWatcher
                           (fmap fromList . loadStaticPages) "pages/"
     config <- liftIO (either error id . decodeEither
-                      <$> FS.readFile "config.yaml")
+                      <$> FS.readFile "config.yml")
     addRoutes routes
     config `seq` return $ App postTableRef staticPageTableRef config Nothing
 

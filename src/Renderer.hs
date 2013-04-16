@@ -59,7 +59,7 @@ renderRoute appRoot route query = appRoot <> renderRoute' route query
   where
     renderRoute' RootR _ = ""
     renderRoute' (PageR page) _ = pager page
-    renderRoute' (TagR tag page) _ = "/tagged/" <> tag <> "/page" <> pager page
+    renderRoute' (TagR tag page) _ = "/tagged/" <> tag <> pager page
     renderRoute' (PostR slug) _ = "/post/" <> slug
     renderRoute' (StaticPageR slug) _ = "/" <> slug
     renderRoute' RssR _ = "/feed/rss"

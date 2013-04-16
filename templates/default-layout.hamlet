@@ -9,7 +9,7 @@
         <link rel=icon type=image/png href="/static/favicon.ico">
         <link rel=stylesheet type=text/css href="/static/css/1140.css">
         <link rel=stylesheet type=text/css href="/static/css/syntax.css">
-        <link href="http://fonts.googleapis.com/css?family=Noto+Sans|Droid+Sans|Nova+Flat" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Noto+Sans|PT+Mono|Nova+Flat" rel="stylesheet" type="text/css">
         <link rel=stylesheet type=text/css href="/static/css/carbonated.css">
 
         \<!--[if lt IE 9]>

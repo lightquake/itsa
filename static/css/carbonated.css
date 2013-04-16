@@ -53,7 +53,7 @@ article p {
 }
 
 article p code {
-    font-size: 90%;
+    font-family: 'PT Mono', monospace;
 }
 
 article div.title {
@@ -90,6 +90,7 @@ a:visited {
 }
 
 pre {
+    font-family: "PT Mono", sans-serif;
     font-size: 90%;
     background: #F0F0F0;
     padding: 10px 10px;

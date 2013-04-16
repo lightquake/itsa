@@ -32,8 +32,9 @@ div#right-column {
 }
 
 a.title, a.title:visited {
+    font-family: 'Nova Flat', sans-serif;
+    font-weight: bold;
     color: black;
-    font-family: 'Bree Serif', Georgia, serif;
 }
 
 a.title:hover {

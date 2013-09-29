@@ -4,12 +4,12 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <title>#{pageTitle}</title>
+        <title>#{pageTitle}
         <link rel=alternate type=application/rss+xml href="/feed/rss">
         <link rel=icon type=image/png href="/static/favicon.ico">
         <link rel=stylesheet type=text/css href="/static/css/1140.css">
         <link rel=stylesheet type=text/css href="/static/css/syntax.css">
-        <link rel=stylesheet type=text/css href="http://fonts.googleapis.com/css?family=Bree+Serif&subset=latin,latin-ext">
+        <link rel=stylesheet type=text/css href="http://fonts.googleapis.com/css?family=Bree+Serif&amp;subset=latin,latin-ext">
         <link rel=stylesheet type=text/css href="/static/css/carbonated.css">
 
         \<!--[if lt IE 9]>
@@ -41,12 +41,10 @@
                     #{view _shortTitle staticPage}
             <div #rss>
                 <a href=@{RssR}>
-                   <img src="/static/img/rss.png">
+                   <img src="/static/img/rss.png" alt="RSS feed icon">
 
       ^{body}
 
       <div .row>
         <footer>
-          Powered by <a href="https://github.com/lightquake/itsa">itsa</a>,
-          <a href="http://snapframework.com/">Snap</a>,
-          and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.
+          Powered by <a href="https://github.com/lightquake/itsa">itsa</a>, <a href="http://snapframework.com/">Snap</a>, and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.

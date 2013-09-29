@@ -9,9 +9,11 @@ import           Control.Lens
 import           Control.Monad             (filterM, forM)
 import           Data.Data.Lens
 import           Data.Either               (partitionEithers)
+import           Data.Monoid               ((<>))
 import qualified Data.Text                 as T
 import           Data.Text.Encoding        (decodeUtf8With)
 import           Data.Text.Encoding.Error  (lenientDecode)
+import qualified Data.Text.IO              as T
 import           Data.Time.LocalTime       (zonedTimeToUTC)
 import           Data.Yaml                 ((.!=), (.:), (.:?))
 import qualified Data.Yaml                 as Yaml
@@ -45,16 +47,26 @@ loadObjects loader dir = do
 
 -- | Load a list of posts from disk.
 loadPosts :: FS.FilePath -> IO [Post]
-loadPosts = loadObjects $ \subdir -> loadObject buildPost
-                                     (subdir </> "post.markdown")
-                                     (subdir </> "meta.yml")
+loadPosts = loadObjects $
+            \subdir -> loadObject buildPost
+                       (subdir </> "post.markdown")
+                       (subdir </> "meta.yml")
 
 -- | Load a list of static pages (i.e., pages rendered as if they were
 -- posts that aren't actually posts) from disk.
 loadStaticPages :: FS.FilePath -> IO [StaticPage]
-loadStaticPages = loadObjects $ \subdir -> loadObject buildStaticPage
-                                     (subdir </> "page.markdown")
-                                     (subdir </> "meta.yml")
+loadStaticPages path = filterM badSlug =<<
+                       loadObjects (
+                           \subdir -> loadObject buildStaticPage
+                                      (subdir </> "page.markdown")
+                                      (subdir </> "meta.yml")) path
+  where badSlug post | view _slug post `elem` badSlugs = do
+            T.putStrLn $ "Bad page slug " <> view _slug post <> "."
+            return True
+                     | otherwise = return False
+        -- Based on the routes in Site.hs.
+        badSlugs = ["static", "tagged", "post", "page", "drafts", "queue",
+                    "feed"]
 
 
 -- | Load some kind of post-y object given the files to load from and

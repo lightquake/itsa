@@ -27,7 +27,9 @@ import qualified Handler
 import           Loader
 
 ------------------------------------------------------------------------------
--- | The application's routes.
+-- | The application's routes. Note that if this is updated, then so do
+-- 'Loader.loadStaticPages', to update the static page slug blacklist, and
+-- 'Renderer.renderRoute', to update the route rendering.
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
            ("/tagged/:tagName/page/:page", Handler.tagPage),

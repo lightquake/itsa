@@ -192,9 +192,11 @@ div.sidebar-tag-list {
     padding: 20px;
     margin-bottom: 20px;
 }
+
 div.sidebar-tag-list .tag {
     background-color: #EEE;
     padding: 2px;
+    margin: 2px;
     line-height: 2.0;
     white-space: nowrap;
 }

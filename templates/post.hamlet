@@ -10,8 +10,8 @@
      <span .tags>
         $with tags <- view _tags post
           $if not (null tags)
-            Tagged: <a href=@{TagR (head tags) 1}>#{head tags}</a>
+            Tagged: <a href="@{TagR (head tags) 1}">#{head tags}</a>
             $forall tag <- tail tags
-              , <a href=@{TagR tag 1}>#{tag}</a>
+              , <a href="@{TagR tag 1}">#{tag}</a>
 
      <div style="clear: both;">

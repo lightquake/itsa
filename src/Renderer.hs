@@ -55,7 +55,8 @@ renderRoute :: Text -- ^ The approot.
                                  -- what these are and use them.
                                  -- Actually use these.
                -> Text
-renderRoute appRoot route query = appRoot <> renderRoute' route query
+renderRoute appRoot route query =
+    Text.replace " " "%20" $ appRoot <> renderRoute' route query
   where
     renderRoute' RootR _ = ""
     renderRoute' (PageR page) _ = pager page

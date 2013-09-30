@@ -17,7 +17,7 @@ import           Data.Table             (fromList)
 import           Data.Yaml              (decodeEither)
 import qualified Filesystem             as FS
 import qualified Filesystem.Path        as FS
-import           Snap.Core              (ifTop)
+import           Snap.Core              (ifTop, modifyResponse, setContentType)
 import           Snap.Snaplet
 import           Snap.Util.FileServe
 import           System.FSNotify        (startManager, watchTree)
@@ -27,7 +27,9 @@ import qualified Handler
 import           Loader
 
 ------------------------------------------------------------------------------
--- | The application's routes.
+-- | The application's routes. Note that if this is updated, then so do
+-- 'Loader.loadStaticPages', to update the static page slug blacklist, and
+-- 'Renderer.renderRoute', to update the route rendering.
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/static", serveDirectory "static"),
            ("/tagged/:tagName/page/:page", Handler.tagPage),
@@ -52,7 +54,9 @@ app = makeSnaplet "itsa" "A simple blog engine." Nothing $ do
                           (fmap fromList . loadStaticPages) "pages/"
     config <- liftIO (either error id . decodeEither
                       <$> FS.readFile "config.yml")
-    addRoutes routes
+    let routeWrapper (route, handler) =
+            (route, modifyResponse (setContentType "text/html") >> handler)
+    addRoutes $ map routeWrapper routes
     config `seq` return $ App postTableRef staticPageTableRef config Nothing
 
 -- | Given a function that loads data from a path and a path, set up a

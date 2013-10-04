@@ -1,27 +1,30 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
 -- | This is the module responsible for loading posts from disk, both
 -- the initial load and the reload triggered by file modification.
 module Loader (loadStaticPages, loadPosts) where
 
-import           Control.Applicative       ((<$>))
-import           Control.Exception         (handle)
+import           Control.Applicative           ((<$>))
+import           Control.Exception             (handle)
 import           Control.Lens
-import           Control.Monad             (filterM, forM)
+import           Control.Monad                 (filterM, forM)
 import           Data.Data.Lens
-import           Data.Either               (partitionEithers)
-import           Data.Monoid               ((<>))
-import qualified Data.Text                 as T
-import           Data.Text.Encoding        (decodeUtf8With)
-import           Data.Text.Encoding.Error  (lenientDecode)
-import qualified Data.Text.IO              as T
-import           Data.Time.LocalTime       (zonedTimeToUTC)
-import           Data.Yaml                 ((.!=), (.:), (.:?))
-import qualified Data.Yaml                 as Yaml
-import qualified Filesystem                as FS
-import           Filesystem.Path.CurrentOS ((</>))
-import qualified Filesystem.Path.CurrentOS as FS
-import           Text.Pandoc               (Block (CodeBlock), def,
-                                            readMarkdown, writeHtml)
+import           Data.Either                   (partitionEithers)
+import           Data.Monoid                   ((<>))
+import qualified Data.Text                     as T
+import           Data.Text.Encoding            (decodeUtf8With)
+import           Data.Text.Encoding.Error      (lenientDecode)
+import qualified Data.Text.IO                  as T
+import           Data.Time                     (formatTime, getCurrentTime,
+                                                zonedTimeToUTC)
+import           Data.Yaml                     ((.!=), (.:), (.:?))
+import qualified Data.Yaml                     as Yaml
+import qualified Filesystem                    as FS
+import           Filesystem.Path.CurrentOS     ((</>))
+import qualified Filesystem.Path.CurrentOS     as FS
+import           System.Locale                 (defaultTimeLocale)
+import           Text.InterpolatedString.Perl6 (qc)
+import           Text.Pandoc                   (Block (CodeBlock), def,
+                                                readMarkdown, writeHtml)
 
 import           Types
 
@@ -125,3 +128,13 @@ buildStaticPage slug body o = do
                       , __pageBody = writeHtml def . readMarkdown def . T.unpack
                                      $ body
                 }
+
+-- | A metadata template with the most common fields filled in.
+metaTemplate :: IO T.Text
+metaTemplate = do
+    now <- getCurrentTime
+    return [qc|title: Post title
+posted: {formatTime defaultTimeLocale "%F %T %Z" now}
+draft: true
+tags:
+ - a sample tag|]

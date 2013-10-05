@@ -68,36 +68,23 @@ loadPosts = loadObjects $ \subdir -> handle catcher $ do
 -- | Load a list of static pages (i.e., pages rendered as if they were
 -- posts that aren't actually posts) from disk.
 loadStaticPages :: FS.FilePath -> IO [StaticPage]
-loadStaticPages path = filterM badSlug =<<
-                       loadObjects (
-                           \subdir -> loadObject buildStaticPage
-                                      (subdir </> "page.markdown")
-                                      (subdir </> "meta.yml")) path
-  where badSlug post | view _slug post `elem` badSlugs = do
-            T.putStrLn $ "Bad page slug " <> view _slug post <> "."
-            return True
-                     | otherwise = return False
-        -- Based on the routes in Site.hs.
-        badSlugs = ["static", "tagged", "post", "page", "drafts", "queue",
-                    "feed"]
-
-
--- | Load some kind of post-y object given the files to load from and
--- a \'builder\' function. The slug is taken from the directory name
--- of the content.
-loadObject :: (T.Text -> T.Text -> Yaml.Object -> Yaml.Parser a)
-              -- ^ The \'builder\', which takes the slug, body, and the
-              -- yaml metadata.
-              -> FS.FilePath -- ^ Path to the content.
-              -> FS.FilePath -- ^ Path to the metadata.
-              -> IO (Either String a)
-loadObject builder contentPath metadataPath = handle catcher $ do
-    let Right slug = FS.toText . FS.dirname $ contentPath
-    objText <- decodeUtf8With lenientDecode <$> FS.readFile contentPath
-    maybeYaml <- Yaml.decodeEither <$> FS.readFile metadataPath
-    return (maybeYaml >>= Yaml.parseEither (builder slug objText))
-    where catcher :: IOError -> IO (Either String a)
-          catcher err = return . Left $ show err
+loadStaticPages path = flip loadObjects path $ \subdir -> do
+    let Right slug = FS.toText . FS.basename $ subdir
+    objText <- decodeUtf8With lenientDecode <$> readWithDefault
+               (subdir </> "page.markdown")
+               (return "Lorem ipsum")
+    maybeYaml <- Yaml.decodeEither <$>
+                 readWithDefault
+                 (subdir </> "meta.yml")
+                 (return "title: Page title")
+    return $ maybeYaml >>= Yaml.parseEither (buildStaticPage slug objText)
+            >>= checkBadSlug
+  where
+    checkBadSlug post | view _slug post `elem` badSlugs =
+        Left $ "Bad page slug " <> T.unpack (view _slug post) <> "."
+                      | otherwise = Right post
+    -- Based on the routes in Site.hs.
+    badSlugs = ["static", "tagged", "post", "page", "drafts", "queue", "feed"]
 
 
 -- | Build an individual post out of the 'Data.Text.Text' representing

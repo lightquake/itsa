@@ -33,6 +33,7 @@ Executable itsa
     data-default,
     fsnotify                  >= 0.0.6,
     hamlet                    >= 1.0,
+    interpolatedstring-perl6,
     lens                      >= 3.7.6,
     MonadCatchIO-transformers >= 0.2.1,
     mtl                       >= 2,

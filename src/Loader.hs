@@ -50,7 +50,6 @@ loadObjects loader dir = do
     mapM_ putStrLn errors
     return posts
 
-
 -- | Load a list of posts from disk.
 loadPosts :: FS.FilePath -> IO [Post]
 loadPosts = loadObjects $ \subdir -> handle catcher $ do
@@ -63,7 +62,6 @@ loadPosts = loadObjects $ \subdir -> handle catcher $ do
     return $ maybeYaml >>= Yaml.parseEither (buildPost slug objText)
       where catcher :: IOError -> IO (Either String a)
             catcher err = return . Left $ show err
-
 
 -- | Load a list of static pages (i.e., pages rendered as if they were
 -- posts that aren't actually posts) from disk.
@@ -85,7 +83,6 @@ loadStaticPages path = flip loadObjects path $ \subdir -> do
                       | otherwise = Right post
     -- Based on the routes in Site.hs.
     badSlugs = ["static", "tagged", "post", "page", "drafts", "queue", "feed"]
-
 
 -- | Build an individual post out of the 'Data.Text.Text' representing
 -- the body and the 'Data.Yaml.Object' containing the metadata.
@@ -136,6 +133,7 @@ draft: true
 tags:
  - a sample tag|]
 
+-- | Read a file from disk with optional default content.
 readWithDefault :: FS.FilePath -> IO ByteString -> IO ByteString
 readWithDefault path defaultTemplate = do
     FS.readFile path `catch` handler

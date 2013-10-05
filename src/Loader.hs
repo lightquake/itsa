@@ -4,9 +4,10 @@
 module Loader (loadStaticPages, loadPosts) where
 
 import           Control.Applicative           ((<$>))
-import           Control.Exception             (handle)
+import           Control.Exception             (catch, handle)
 import           Control.Lens
 import           Control.Monad                 (filterM, forM)
+import           Data.ByteString               (ByteString)
 import           Data.Data.Lens
 import           Data.Either                   (partitionEithers)
 import           Data.Monoid                   ((<>))
@@ -21,6 +22,7 @@ import qualified Data.Yaml                     as Yaml
 import qualified Filesystem                    as FS
 import           Filesystem.Path.CurrentOS     ((</>))
 import qualified Filesystem.Path.CurrentOS     as FS
+import           System.IO.Error               (isDoesNotExistError)
 import           System.Locale                 (defaultTimeLocale)
 import           Text.InterpolatedString.Perl6 (qc)
 import           Text.Pandoc                   (Block (CodeBlock), def,
@@ -48,12 +50,20 @@ loadObjects loader dir = do
     mapM_ putStrLn errors
     return posts
 
+
 -- | Load a list of posts from disk.
 loadPosts :: FS.FilePath -> IO [Post]
-loadPosts = loadObjects $
-            \subdir -> loadObject buildPost
-                       (subdir </> "post.markdown")
-                       (subdir </> "meta.yml")
+loadPosts = loadObjects $ \subdir -> handle catcher $ do
+    let Right slug = FS.toText . FS.basename $ subdir
+    objText <- decodeUtf8With lenientDecode <$>
+               readWithDefault (subdir </> "post.markdown")
+               (return "Lorem ipsum")
+    maybeYaml <- Yaml.decodeEither <$>
+                 readWithDefault (subdir </> "meta.yml") postMetaTemplate
+    return $ maybeYaml >>= Yaml.parseEither (buildPost slug objText)
+      where catcher :: IOError -> IO (Either String a)
+            catcher err = return . Left $ show err
+
 
 -- | Load a list of static pages (i.e., pages rendered as if they were
 -- posts that aren't actually posts) from disk.
@@ -130,11 +140,20 @@ buildStaticPage slug body o = do
                 }
 
 -- | A metadata template with the most common fields filled in.
-metaTemplate :: IO T.Text
-metaTemplate = do
+postMetaTemplate :: IO ByteString
+postMetaTemplate = do
     now <- getCurrentTime
     return [qc|title: Post title
 posted: {formatTime defaultTimeLocale "%F %T %Z" now}
 draft: true
 tags:
  - a sample tag|]
+
+readWithDefault :: FS.FilePath -> IO ByteString -> IO ByteString
+readWithDefault path defaultTemplate = do
+    FS.readFile path `catch` handler
+  where handler err | isDoesNotExistError err = do
+            tpl <- defaultTemplate
+            FS.writeFile path tpl
+            return tpl
+                    | otherwise = ioError err

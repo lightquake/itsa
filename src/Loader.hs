@@ -14,7 +14,6 @@ import           Data.Monoid                   ((<>))
 import qualified Data.Text                     as T
 import           Data.Text.Encoding            (decodeUtf8With)
 import           Data.Text.Encoding.Error      (lenientDecode)
-import qualified Data.Text.IO                  as T
 import           Data.Time                     (formatTime, getCurrentTime,
                                                 zonedTimeToUTC)
 import           Data.Yaml                     ((.!=), (.:), (.:?))

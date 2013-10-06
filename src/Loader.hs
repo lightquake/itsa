@@ -27,7 +27,8 @@ import           Text.InterpolatedString.Perl6 (qc)
 import           Text.Pandoc                   (Block (CodeBlock), def,
                                                 readMarkdown, writeHtml)
 
-import           Types
+import           qualified Types as Ty
+import Types (Post(..), StaticPage(..))
 
 -- | Do a one-shot load of all objects off of disk. Error messages are
 -- printed to stdout.
@@ -77,8 +78,8 @@ loadStaticPages path = flip loadObjects path $ \subdir -> do
     return $ maybeYaml >>= Yaml.parseEither (buildStaticPage slug objText)
             >>= checkBadSlug
   where
-    checkBadSlug post | view _slug post `elem` badSlugs =
-        Left $ "Bad page slug " <> T.unpack (view _slug post) <> "."
+    checkBadSlug post | view Ty.slug post `elem` badSlugs =
+        Left $ "Bad page slug " <> T.unpack (view Ty.slug post) <> "."
                       | otherwise = Right post
     -- Based on the routes in Site.hs.
     badSlugs = ["static", "tagged", "post", "page", "drafts", "queue", "feed"]
@@ -99,15 +100,15 @@ buildPost slug body o = do
             Nothing -> attrs
         blockTransform (CodeBlock attrs code) = CodeBlock (addLang attrs) code
         blockTransform block = block
-    return Post { __postTitle = title,
-                  __postSlug = slug,
-                  __postTags = tags,
-                  __postIsDraft = isDraft,
-                  __postBody = writeHtml def
+    return Post { _postTitle = title,
+                  _postSlug = slug,
+                  _postTags = tags,
+                  _postIsDraft = isDraft,
+                  _postBody = writeHtml def
                                . over template blockTransform
                                . readMarkdown def . T.unpack
                                $ body,
-                  __postPosted = posted}
+                  _postPosted = posted}
 
 -- | Build a page out of the 'T.Text' representing the slug and body
 -- and the 'Yaml.Object' object containing the metadata.
@@ -115,10 +116,10 @@ buildStaticPage :: T.Text -> T.Text -> Yaml.Object -> Yaml.Parser StaticPage
 buildStaticPage slug body o = do
     title <- o .: "title"
     shortTitle <- o .:? "short-title" .!= title
-    return StaticPage { __pageShortTitle = shortTitle
-                      , __pageTitle = title
-                      , __pageSlug = slug
-                      , __pageBody = writeHtml def . readMarkdown def . T.unpack
+    return StaticPage { _pageShortTitle = shortTitle
+                      , _pageTitle = title
+                      , _pageSlug = slug
+                      , _pageBody = writeHtml def . readMarkdown def . T.unpack
                                      $ body
                 }
 

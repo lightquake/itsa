@@ -1,4 +1,6 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes, Rank2Types #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE Rank2Types        #-}
 
 -- | Individual handlers. We use the renderers defined in Renderer and
 -- our own logic for picking which posts to render.
@@ -45,14 +47,14 @@ tagPage = do
 -- | Show all draft posts.
 draftsPage :: AppHandler ()
 draftsPage = localhostOnly $
-             showAllPaginatedPosts QueueR (withG _isDraft (==) True)
+             showAllPaginatedPosts QueueR (withG isDraft (==) True)
 
 -- | Show all queued, non-draft posts.
 queuePage :: AppHandler ()
 queuePage = localhostOnly $ do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts DraftsR $ withG _posted (>) now
-        .withG _isDraft (==) False
+    showAllPaginatedPosts DraftsR $ withG posted (>) now
+        .withG isDraft (==) False
 
 -- | Show the post with a given slug.
 postPage :: AppHandler ()
@@ -64,11 +66,11 @@ postPage = do
       where
         -- Given a slug, either render that post or 404.
         postPage' :: TimeZone -> Text -> AppHandler (HtmlUrl ItsaR)
-        postPage' tz slug = do
+        postPage' tz postSlug = do
             postTable <- getPostTable
-            case postTable^.at slug of
+            case postTable^.at postSlug of
                 Just post -> do
-                    assign _subtitle $ Just $ view _title post
+                    assign _subtitle $ Just $ view title post
                     return $ renderPost tz post
                 Nothing -> return render404
 
@@ -79,11 +81,11 @@ staticPage = do
     serveTemplate =<< renderDefault =<< page' pageName
     where
       page' :: Text -> AppHandler (HtmlUrl ItsaR)
-      page' slug = do
+      page' pageSlug = do
           staticPageTable <- getStaticPageTable
-          case staticPageTable^.at slug of
+          case staticPageTable^.at pageSlug of
                Just page -> do
-                   assign _subtitle $ Just $ view _title page
+                   assign _subtitle $ Just $ view title page
                    return $ renderStaticPage page
                Nothing -> return render404
 
@@ -91,8 +93,8 @@ rss :: AppHandler ()
 rss = do
     postTable <- getPostTable
     now <- liftIO getCurrentTime
-    let posts = postTable^..withG _isDraft (==) False .withG _posted (<=) now
-                .group (^._posted).rows'
+    let posts = postTable^..withG isDraft (==) False .withG posted (<=) now
+                .group (^.posted).rows'
                 & take 10 . reverse
     writeLBS =<< XML.renderLBS XML.def <$> renderRss posts
 
@@ -105,8 +107,8 @@ showPaginatedPosts :: (Int -> ItsaR) -- ^ A function from page numbers
                       -> AppHandler ()
 showPaginatedPosts pageRouter postFilter = do
     now <- liftIO getCurrentTime
-    showAllPaginatedPosts pageRouter $ postFilter.withG _isDraft (==) False
-        .withG _posted (<=) now
+    showAllPaginatedPosts pageRouter $ postFilter.withG isDraft (==) False
+        .withG posted (<=) now
 
 -- | Show the given page of posts filtered using the given lens. This
 -- uses the :page parameter name, but defaults to page 1.
@@ -120,7 +122,7 @@ showAllPaginatedPosts pageRouter postFilter = do
     postsPerPage <- view $ _config._postsPerPage
     tz <- view $ _config._timeZone
     postTable <- getPostTable
-    let posts' = postTable^..postFilter.group (^._posted).rows'
+    let posts' = postTable^..postFilter.group (^.posted).rows'
                 & take (postsPerPage + 1) . drop ((pageNumber - 1) * postsPerPage)
                 . reverse
         -- By taking one more post than is necessary, we can determine

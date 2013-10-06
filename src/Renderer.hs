@@ -61,8 +61,8 @@ renderRoute appRoot route query =
     renderRoute' RootR _ = ""
     renderRoute' (PageR page) _ = pager page
     renderRoute' (TagR tag page) _ = "/tagged/" <> tag <> pager page
-    renderRoute' (PostR slug) _ = "/post/" <> slug
-    renderRoute' (StaticPageR slug) _ = "/" <> slug
+    renderRoute' (PostR s) _ = "/post/" <> s
+    renderRoute' (StaticPageR s) _ = "/" <> s
     renderRoute' RssR _ = "/feed/rss"
     renderRoute' (QueueR page) _ = "/queue" <> pager page
     renderRoute' (DraftsR page) _ = "/drafts" <> pager page
@@ -88,7 +88,7 @@ renderDefault tpl = do
     mAnalytics <- view $ _config._analytics
     let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
         staticPages = staticPageTable^..group StaticPageSlug .rows
-    body <- renderTwoColumn tpl
+    pageBody <- renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
     return $(hamletRelativeFile "templates/default-layout.hamlet")
 
@@ -147,8 +147,8 @@ render404 = $(hamletRelativeFile "templates/404.hamlet")
 
 -- | Get the route referring to a post.
 routePost :: Post -> ItsaR
-routePost post = PostR $ view _slug post
+routePost post = PostR $ view slug post
 
 -- | Get the route referring to a page.
 routePage :: StaticPage -> ItsaR
-routePage page = StaticPageR $ view _slug page
+routePage page = StaticPageR $ view slug page

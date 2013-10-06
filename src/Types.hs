@@ -14,36 +14,35 @@ import qualified Data.Set            as S
 import           Data.Table
 import           Data.Text           (Text)
 import           Data.Time
-import           FieldRule
 import           Text.Blaze.Html     (Html)
 
 -- | All the information corresponding to a post. Note that the slug
 -- is guaranteed to be unique, since it's the directory name.
-data Post = Post { __postTitle   :: Text -- ^ The title of the post.
-                 , __postSlug    :: Text -- ^ The 'slug', which appears in
+data Post = Post { _postTitle   :: Text -- ^ The title of the post.
+                 , _postSlug    :: Text -- ^ The 'slug', which appears in
                                     -- the URL. This should never
                                     -- change!
-                 , __postBody    :: Html -- ^ The actual body of the post.
-                 , __postTags    :: [Text] -- ^ The post tags.
-                 , __postIsDraft :: Bool -- ^ Whether the post is a draft.
-                 , __postPosted  :: UTCTime -- ^ The time at which the post
+                 , _postBody    :: Html -- ^ The actual body of the post.
+                 , _postTags    :: [Text] -- ^ The post tags.
+                 , _postIsDraft :: Bool -- ^ Whether the post is a draft.
+                 , _postPosted  :: UTCTime -- ^ The time at which the post
                                        -- is 'posted'.
                  }
 
 
 -- | All of the information corresponding to a page.
-data StaticPage = StaticPage { __pageShortTitle :: Text
+data StaticPage = StaticPage { _pageShortTitle :: Text
                                -- ^ The 'short title', which should be
                                -- short enough to fit alongside other
                                -- short titles.
-                             , __pageTitle      :: Text -- ^ The full title.
-                             , __pageSlug       :: Text -- ^ The slug.
-                             , __pageBody       :: Html -- ^ The page body.
+                             , _pageTitle      :: Text -- ^ The full title.
+                             , _pageSlug       :: Text -- ^ The slug.
+                             , _pageBody       :: Html -- ^ The page body.
                              }
 
 
-makeFieldsWith underscoredCamelCaseFields ''Post
-makeFieldsWith underscoredCamelCaseFields ''StaticPage
+makeFields ''Post
+makeFields ''StaticPage
 
 instance Tabular Post where
     type PKT Post = Text
@@ -53,8 +52,8 @@ instance Tabular Post where
 
     data Tab Post i = PostTab (i Primary Text) (i Inverted (S.Set Text))
 
-    fetch PostSlug post = post^._slug
-    fetch Tags post = post^._tags & S.fromList
+    fetch PostSlug post = post^.slug
+    fetch Tags post = post^.tags & S.fromList
 
     primary = PostSlug
     primarily PostSlug r = r
@@ -71,7 +70,7 @@ instance Tabular StaticPage where
 
     data Tab StaticPage i = StaticPageTab (i Primary Text)
 
-    fetch StaticPageSlug = view _slug
+    fetch StaticPageSlug = view slug
 
     primary = StaticPageSlug
     primarily StaticPageSlug r = r

@@ -1,14 +1,14 @@
 <article>
   <div .title>
-    <a .title href=@{routePost post}>#{view _title post}
+    <a .title href=@{routePost post}>#{view title post}
   <div>
-    <div .content>#{view _body post}
+    <div .content>#{view body post}
     <div .metadata>
      <span .time>
-        Posted: #{formatTime defaultTimeLocale "%B %e, %Y" $ utcToZonedTime tz $ view _posted post}
+        Posted: #{formatTime defaultTimeLocale "%B %e, %Y" $ utcToZonedTime tz $ view posted post}
 
      <span .tags>
-        $with tags <- view _tags post
+        $with tags <- view tags post
           $if not (null tags)
             Tagged: <a href="@{TagR (head tags) 1}">#{head tags}</a>
             $forall tag <- tail tags

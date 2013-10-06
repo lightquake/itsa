@@ -1,5 +1,5 @@
 <article>
   <div .title>
-    <a .title href=@{routePage page}>#{view _title page}
+    <a .title href=@{routePage page}>#{view title page}
   <div>
-    <div .content>#{view _body page}
+    <div .content>#{view body page}

@@ -27,8 +27,8 @@ import           Text.InterpolatedString.Perl6 (qc)
 import           Text.Pandoc                   (Block (CodeBlock), def,
                                                 readMarkdown, writeHtml)
 
-import           qualified Types as Ty
-import Types (Post(..), StaticPage(..))
+import           Types                         (Post (..), StaticPage (..))
+import qualified Types                         as Ty
 
 -- | Do a one-shot load of all objects off of disk. Error messages are
 -- printed to stdout.

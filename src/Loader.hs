@@ -24,7 +24,8 @@ import qualified Filesystem.Path.CurrentOS     as FS
 import           System.IO.Error               (isDoesNotExistError)
 import           System.Locale                 (defaultTimeLocale)
 import           Text.InterpolatedString.Perl6 (qc)
-import           Text.Pandoc                   (Block (CodeBlock), def,
+import           Text.Pandoc                   (Block (CodeBlock),
+                                                WriterOptions (..), def,
                                                 readMarkdown, writeHtml)
 
 import           Types                         (Post (..), StaticPage (..))
@@ -104,7 +105,7 @@ buildPost slug body o = do
                   _postSlug = slug,
                   _postTags = tags,
                   _postIsDraft = isDraft,
-                  _postBody = writeHtml def
+                  _postBody = writeHtml writerOptions
                                . over template blockTransform
                                . readMarkdown def . T.unpack
                                $ body,
@@ -119,7 +120,8 @@ buildStaticPage slug body o = do
     return StaticPage { _pageShortTitle = shortTitle
                       , _pageTitle = title
                       , _pageSlug = slug
-                      , _pageBody = writeHtml def . readMarkdown def . T.unpack
+                      , _pageBody = writeHtml writerOptions .
+                                    readMarkdown def . T.unpack
                                      $ body
                 }
 
@@ -142,3 +144,6 @@ readWithDefault path defaultTemplate = do
             FS.writeFile path tpl
             return tpl
                     | otherwise = ioError err
+
+writerOptions :: WriterOptions
+writerOptions = def { writerHighlight = True, writerHtml5 = True }

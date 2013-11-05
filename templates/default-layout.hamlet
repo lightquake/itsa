@@ -7,10 +7,9 @@
         <title>#{pageTitle}
         <link rel=alternate type=application/rss+xml href="/feed/rss">
         <link rel=icon type=image/png href="/static/favicon.ico">
-        <link rel=stylesheet type=text/css href="/static/css/1140.css">
         <link rel=stylesheet type=text/css href="/static/css/syntax.css">
         <link href="http://fonts.googleapis.com/css?family=Noto+Sans|PT+Mono|Nova+Flat" rel="stylesheet" type="text/css">
-        <link rel=stylesheet type=text/css href="/static/css/carbonated.css">
+        <link rel=stylesheet type=text/css href="/static/css/negative.css">
 
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -29,11 +28,11 @@
             })();
 
   <body>
-    <div .container>
+    <div #container>
       <header .row>
           <div #title>
             <a .title href=@{RootR}>#{blogTitle}
-          <nav>
+          <nav .pages>
             <ul #page-bar>
               $forall staticPage <- staticPages
                 <li>

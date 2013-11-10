@@ -90,7 +90,7 @@ renderDefault tpl = do
         staticPages = staticPageTable^..group StaticPageSlug .rows
     pageBody <- renderTwoColumn tpl
         (postTable^@..group Tags .to count & renderTagList)
-    return $(hamletRelativeFile "templates/default-layout.hamlet")
+    return $(hamletRelativeFile "templates/layout.hamlet")
 
 
 -- | Render a series of posts.

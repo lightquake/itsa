@@ -4,8 +4,8 @@
 -- rendered templates and give another template in return. Note that
 -- these templates don't have the routing renderer applied to them for
 -- composability reasons/separation of concerns.
-module Renderer (ItsaR(..), renderRoute,
-                 renderTwoColumn,
+module Renderer (ItsaR(..),
+                 renderRoute,
                  renderDefault,
                  renderPosts,
                  renderPagination,
@@ -71,16 +71,10 @@ renderRoute appRoot route query =
     showT = Text.pack . show
 
 
--- | 'Top-level' renderer that puts its arguments in the default layout.
-renderTwoColumn :: HtmlUrl ItsaR -- ^ The HTML to show in the left column.
-                 -> HtmlUrl ItsaR -- ^ The HTML to show in the right column.
-                 -> AppHandler (HtmlUrl ItsaR)
-renderTwoColumn leftColumn rightColumn
-    = return $ $(hamletRelativeFile "templates/two-column.hamlet")
-
--- | Render a page using the default right column; i.e., the tag list.
+-- | Render a page using the default container; i.e., for the Negative theme,
+-- the left sidebar with the title/pages.
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
-renderDefault tpl = do
+renderDefault pageBody = do
     postTable <- getPostTable
     staticPageTable <- getStaticPageTable
     blogTitle <- view $ _config._blogTitle
@@ -88,8 +82,7 @@ renderDefault tpl = do
     mAnalytics <- view $ _config._analytics
     let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
         staticPages = staticPageTable^..group StaticPageSlug .rows
-    pageBody <- renderTwoColumn tpl
-        (postTable^@..group Tags .to count & renderTagList)
+        tagList = postTable^@..group Tags .to count & renderTagList
     return $(hamletRelativeFile "templates/layout.hamlet")
 
 

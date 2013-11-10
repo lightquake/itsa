@@ -28,22 +28,26 @@
             })();
 
   <body>
-    <div #container>
-      <header .row>
-          <div #title>
-            <a .title href=@{RootR}>#{blogTitle}
-          <nav .pages>
-            <ul #page-bar>
-              $forall staticPage <- staticPages
-                <li>
-                  <a href=@{StaticPageR $ view slug staticPage}>
-                    #{view shortTitle staticPage}
-            <div #rss>
-                <a href=@{RssR}>
-                   <img src="/static/img/rss.png" alt="RSS feed icon">
+    <div #sidebar>
+      <div .title>
+        <a href=@{RootR}>#{blogTitle}
 
-      ^{pageBody}
+      <nav .pages>
+        <ul #page-bar>
+          $forall staticPage <- staticPages
+            <li>
+              <a href=@{StaticPageR $ view slug staticPage}>
+                #{view shortTitle staticPage}
+
+      ^{tagList}
+
+      <div #rss>
+          <a href=@{RssR}>
+             <img src="/static/img/rss.png" alt="RSS feed icon">
 
       <div .row>
         <footer>
           Powered by <a href="https://github.com/lightquake/itsa">itsa</a>, <a href="http://snapframework.com/">Snap</a>, and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.
+
+    <div #main>
+      ^{pageBody}

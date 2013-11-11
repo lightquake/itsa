@@ -1,2 +1,0 @@
-$forall post <- posts
-  ^{renderPost tz post}

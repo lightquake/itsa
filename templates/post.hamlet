@@ -1,6 +1,6 @@
 <article>
   <div .title>
-    <a .title href=@{routePost post}>#{view title post}
+    <a href=@{routePost post}>#{view title post}
   <div>
     <div .content>#{view body post}
     <div .metadata>

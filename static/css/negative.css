@@ -7,31 +7,42 @@ body {
     margin: 0px auto;
 }
 
+
+/* Sidebar stuff. */
 #sidebar {
-    width: 200px;
+    position: fixed;
+    text-align: right;
+    width: 180px;
+    margin-top: 30px;
+    padding-right: 20px;
     float: left;
 }
 
 #sidebar .title {
-    font-size: 36px;
+    font-size: 30px;
 }
 
+#sidebar .title a, #sidebar .title a:visited {
+    color: white;
+}
+
+nav#page-bar ul li {
+    display: block;
+    margin: 10px 0px;
+    font-size: 20px;
+}
+
+nav#page-bar a, nav#page-bar a:visited {
+    color: white;
+}
+
+
+/* Main body. */
 #main {
     width: 760px;
     float: right;
 }
 
-nav #page-bar {
-    display: inline-flex;
-}
-
-nav.pages #page-bar li {
-    display: inline;
-}
-
-nav #rss {
-    display: inline-flex;
-}
 
 article {
     background: #222222;
@@ -39,7 +50,7 @@ article {
     margin: 10px 0px;
 }
 
-article a.title {
+article .title {
     font-size: 40px;
 }
 
@@ -56,6 +67,6 @@ a:visited {
     color: #2e2ecf;
 }
 
-a.title, a.title:visited {
+div.title a, div.title a:visited {
     color: white;
 }

@@ -2,7 +2,7 @@ body {
     line-height: 1.4;
     font-family: "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,
     Verdana,sans-serif;
-    width: 960px;
+    width: 1080px;
     margin: 0px auto;
 }
 
@@ -15,7 +15,7 @@ pre {
 #sidebar {
     position: fixed;
     text-align: right;
-    width: 180px;
+    width: 200px;
     margin-top: 30px;
     padding-right: 20px;
     float: left;
@@ -34,7 +34,7 @@ nav#page-bar ul li {
 
 /* Main body. */
 #main {
-    width: 760px;
+    width: 860px;
     font-size: 16px;
     float: right;
 }

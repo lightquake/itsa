@@ -15,6 +15,7 @@ module Renderer (ItsaR(..),
                  renderRss,
                  render404) where
 
+import           Control.Applicative      ((<$>))
 import           Control.Lens
 import           Data.List                (sortBy)
 import qualified Data.Map                 as Map
@@ -75,16 +76,22 @@ renderRoute appRoot route query =
 -- the left sidebar with the title/pages.
 renderDefault :: HtmlUrl ItsaR -> AppHandler (HtmlUrl ItsaR)
 renderDefault pageBody = do
+    sidebar <- renderSidebar
+    blogTitle <- view $ _config._blogTitle
+    mAnalytics <- view $ _config._analytics
+    pageTitle <- maybe blogTitle (<> " | " <> blogTitle) <$> view _subtitle
+    return $(hamletRelativeFile "templates/layout.hamlet")
+
+-- | Render the sidebar, which contains the blog title, static pages, and tag
+-- cloud.
+renderSidebar :: AppHandler (HtmlUrl ItsaR)
+renderSidebar = do
     postTable <- getPostTable
     staticPageTable <- getStaticPageTable
     blogTitle <- view $ _config._blogTitle
-    subtitle <- view _subtitle
-    mAnalytics <- view $ _config._analytics
-    let pageTitle = maybe blogTitle (<> " | " <> blogTitle) subtitle
-        staticPages = staticPageTable^..group StaticPageSlug .rows
+    let staticPages = staticPageTable^..group StaticPageSlug .rows
         tagList = postTable^@..group Tags .to count & renderTagList
-    return $(hamletRelativeFile "templates/layout.hamlet")
-
+    return $(hamletRelativeFile "templates/sidebar.hamlet")
 
 -- | Render a series of posts.
 renderPosts :: TimeZone -- ^ The time zone to use for displaying timestamps.

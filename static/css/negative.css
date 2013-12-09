@@ -23,18 +23,10 @@ body {
     font-size: 30px;
 }
 
-#sidebar .title a, #sidebar .title a:visited {
-    color: white;
-}
-
 nav#page-bar ul li {
     display: block;
     margin: 10px 0px;
     font-size: 20px;
-}
-
-nav#page-bar a, nav#page-bar a:visited {
-    color: white;
 }
 
 
@@ -58,13 +50,22 @@ article p {
     margin: 0.7em 0;
 }
 
-a {
-    color: #6e6eff;
+a, a.title:hover, a.title:visited:hover {
+    color: #7aa6da;
+    font-weight: bold;
     text-decoration: none;
 }
 
+a.title, a.title:visited {
+    color: white;
+}
+
+a:hover {
+    text-shadow: 0 0 1px #bbb;
+}
+
 a:visited {
-    color: #2e2ecf;
+    color: #1f5594;
 }
 
 div.title a, div.title a:visited {

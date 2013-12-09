@@ -86,11 +86,9 @@ renderDefault pageBody = do
 -- cloud.
 renderSidebar :: AppHandler (HtmlUrl ItsaR)
 renderSidebar = do
-    postTable <- getPostTable
     staticPageTable <- getStaticPageTable
     blogTitle <- view $ _config._blogTitle
     let staticPages = staticPageTable^..group StaticPageSlug .rows
-        tagList = postTable^@..group Tags .to count & renderTagList
     return $(hamletRelativeFile "templates/sidebar.hamlet")
 
 -- | Render a series of posts.

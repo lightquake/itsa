@@ -8,6 +8,10 @@ body {
     margin: 0px auto;
 }
 
+pre {
+    overflow: scroll;
+}
+
 
 /* Sidebar stuff. */
 #sidebar {

@@ -1,6 +1,4 @@
 body {
-    background: black;
-    color: white;
     line-height: 1.4;
     font-family: "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,
     Verdana,sans-serif;
@@ -62,7 +60,7 @@ a, a.title:hover, a.title:visited:hover {
 }
 
 a.title, a.title:visited {
-    color: white;
+    color: black;
 }
 
 a:hover {
@@ -71,8 +69,4 @@ a:hover {
 
 a:visited {
     color: #1f5594;
-}
-
-div.title a, div.title a:visited {
-    color: white;
 }

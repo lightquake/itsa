@@ -9,7 +9,7 @@
         <link rel=icon type=image/png href="/static/favicon.ico">
         <link rel=stylesheet type=text/css href="/static/css/syntax.css">
         <link href="http://fonts.googleapis.com/css?family=Noto+Sans|PT+Mono|Nova+Flat" rel="stylesheet" type="text/css">
-        <link rel=stylesheet type=text/css href="/static/css/negative.css">
+        <link rel=stylesheet type=text/css href="/static/css/positive.css">
 
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>

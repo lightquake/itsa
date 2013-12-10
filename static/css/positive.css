@@ -21,7 +21,7 @@ pre {
     float: left;
 }
 
-#sidebar .title {
+#sidebar #blog-title {
     font-size: 30px;
 }
 

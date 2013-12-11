@@ -1,8 +1,8 @@
 <nav #page-bar>
   <ul>
     $forall staticPage <- staticPages
-      <li>
-        <a .title href=@{StaticPageR $ view slug staticPage}>
+      <a .title href=@{StaticPageR $ view slug staticPage}>
+        <li>
           #{view shortTitle staticPage}
 
 <footer>

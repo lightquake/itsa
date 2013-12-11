@@ -25,16 +25,31 @@ pre {
 #content {
     max-width: 1080px;
     margin: 0px auto;
+    display: flex;
+    flex-flow: row wrap;
 }
 
 
+/* Set up position layout. */
+#content {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+#sidebar {
+    flex: 0 200px;
+    width: 200px;
+}
+
+#main {
+    flex: 1 0px;
+}
+
 /* Sidebar stuff. */
 #sidebar {
-    width: 180px;
     margin-top: 30px;
     padding-right: 40px;
     text-align: right;
-    position: absolute;
 }
 
 
@@ -52,8 +67,6 @@ nav#page-bar ul li {
 
 /* Main body. */
 #main {
-    position: relative;
-    margin: 0 auto 0 200px;
     font-size: 16px;
 }
 
@@ -87,4 +100,14 @@ a:hover {
 
 a:visited {
     color: #1f5594;
+}
+
+/* Display for narrow screens (i.e. mobile phones) */
+@media all and (max-width: 600px) {
+    #sidebar {
+        order: 2;
+        text-align: center;
+    }
+    #main { order: 1; }
+    #sidebar, #main { flex: 1 auto; }
 }

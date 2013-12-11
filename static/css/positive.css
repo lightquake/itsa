@@ -15,6 +15,7 @@ pre {
     text-align: center;
     padding: 30px 0px;
     background: black;
+    margin-bottom: 15px;
 }
 
 #blog-title a {
@@ -25,13 +26,6 @@ pre {
 #content {
     max-width: 1080px;
     margin: 0px auto;
-    display: flex;
-    flex-flow: row wrap;
-}
-
-
-/* Set up position layout. */
-#content {
     display: flex;
     flex-flow: row wrap;
 }
@@ -47,7 +41,6 @@ pre {
 
 /* Sidebar stuff. */
 #sidebar {
-    margin-top: 30px;
     padding-right: 40px;
     text-align: right;
 }
@@ -72,8 +65,8 @@ nav#page-bar ul li {
 
 
 article {
-    padding: 20px;
-    margin: 10px 0px;
+    padding: 0px 20px 20px 20px;
+    margin: 0px 0px 10px 0px;
 }
 
 article .title {
@@ -102,12 +95,31 @@ a:visited {
     color: #1f5594;
 }
 
+
+nav#pagination {
+    font-size: 20px;
+    display: flex;
+    flex-flow: row wrap;
+}
+
+nav#pagination a {
+    display: block;
+    text-align: center;
+    margin: 10px auto;
+}
+
+
 /* Display for narrow screens (i.e. mobile phones) */
 @media all and (max-width: 600px) {
     #sidebar {
-        order: 2;
+        margin-top: 0px;
         text-align: center;
+        padding-right: 0px;
+        width: 100%;
     }
-    #main { order: 1; }
     #sidebar, #main { flex: 1 auto; }
+    #content {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
 }

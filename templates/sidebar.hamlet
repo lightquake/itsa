@@ -1,6 +1,3 @@
-<div #blog-title>
-  <a .title href=@{RootR}>#{blogTitle}
-
 <nav #page-bar>
   <ul>
     $forall staticPage <- staticPages
@@ -8,6 +5,5 @@
         <a .title href=@{StaticPageR $ view slug staticPage}>
           #{view shortTitle staticPage}
 
-<div .row>
-  <footer>
-    Powered by <a href="https://github.com/lightquake/itsa">itsa</a>, <a href="http://snapframework.com/">Snap</a>, and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.
+<footer>
+  Powered by <a href="https://github.com/lightquake/itsa">itsa</a>, <a href="http://snapframework.com/">Snap</a>, and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.

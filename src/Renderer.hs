@@ -87,7 +87,6 @@ renderDefault pageBody = do
 renderSidebar :: AppHandler (HtmlUrl ItsaR)
 renderSidebar = do
     staticPageTable <- getStaticPageTable
-    blogTitle <- view $ _config._blogTitle
     let staticPages = staticPageTable^..group StaticPageSlug .rows
     return $(hamletRelativeFile "templates/sidebar.hamlet")
 

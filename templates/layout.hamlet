@@ -28,8 +28,12 @@
             })();
 
   <body>
-    <div #sidebar>
-      ^{sidebar}
+    <div #blog-title>
+      <a .title href=@{RootR}>#{blogTitle}
 
-    <div #main>
-      ^{pageBody}
+    <div #content>
+      <aside #sidebar>
+        ^{sidebar}
+
+      <div #main>
+        ^{pageBody}

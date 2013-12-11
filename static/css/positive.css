@@ -2,8 +2,7 @@ body {
     line-height: 1.4;
     font-family: "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,
     Verdana,sans-serif;
-    width: 1080px;
-    margin: 0px auto;
+    margin: 0px;
 }
 
 pre {
@@ -11,18 +10,37 @@ pre {
 }
 
 
-/* Sidebar stuff. */
-#sidebar {
-    position: fixed;
-    text-align: right;
-    width: 200px;
-    margin-top: 30px;
-    padding-right: 20px;
-    float: left;
+#blog-title {
+    font-size: 48px;
+    text-align: center;
+    padding: 30px 0px;
+    background: black;
 }
 
-#sidebar #blog-title {
-    font-size: 30px;
+#blog-title a {
+    color: white;
+}
+
+
+#content {
+    max-width: 1080px;
+    margin: 0px auto;
+}
+
+
+/* Sidebar stuff. */
+#sidebar {
+    width: 180px;
+    margin-top: 30px;
+    padding-right: 40px;
+    text-align: right;
+    position: absolute;
+}
+
+
+nav#page-bar ul {
+    margin: 0px;
+    padding: 0px;
 }
 
 nav#page-bar ul li {
@@ -34,9 +52,9 @@ nav#page-bar ul li {
 
 /* Main body. */
 #main {
-    width: 860px;
+    position: relative;
+    margin: 0 auto 0 200px;
     font-size: 16px;
-    float: right;
 }
 
 

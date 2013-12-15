@@ -26,16 +26,22 @@ pre {
 #content {
     max-width: 1080px;
     margin: 0px auto;
+
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;
     display: flex;
     flex-flow: row wrap;
 }
 
 #sidebar {
+    -webkit-flex: 0 200px;
     flex: 0 200px;
+
     width: 200px;
 }
 
 #main {
+    -webkit-flex: 1 0px;
     flex: 1 0px;
 }
 
@@ -98,6 +104,10 @@ a:visited {
 
 nav#pagination {
     font-size: 20px;
+
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;
+
     display: flex;
     flex-flow: row wrap;
 }
@@ -117,8 +127,11 @@ nav#pagination a {
         padding-right: 0px;
         width: 100%;
     }
-    #sidebar, #main { flex: 1 auto; }
+    #sidebar, #main { -webkit-flex: 1 auto; flex: 1 auto; }
     #content {
+        -webkit-flex-direction: column;
+        -webkit-flex-wrap: nowrap;
+
         flex-direction: column;
         flex-wrap: nowrap;
     }

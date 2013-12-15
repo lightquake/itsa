@@ -4,6 +4,3 @@
       <a .title href=@{StaticPageR $ view slug staticPage}>
         <li>
           #{view shortTitle staticPage}
-
-<footer>
-  Powered by <a href="https://github.com/lightquake/itsa">itsa</a>, <a href="http://snapframework.com/">Snap</a>, and <a href="http://www.haskell.org/haskellwiki/Haskell">Haskell</a>.

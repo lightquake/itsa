@@ -65,7 +65,8 @@ hr.post-separator:first-child {
     text-align: right;
     border-right: 1px #945e1f solid;
     height: 100%;
-    padding: 10px 40px 10px 0px;
+    padding: 10px 30px 10px 0px;
+    margin-right: 10px;
 }
 
 nav#page-bar {
@@ -157,11 +158,11 @@ nav#pagination a {
     #blog-title {
         margin-bottom: 0px;
     }
-
     #sidebar {
         margin-top: 0px;
         text-align: center;
         padding-right: 0px;
+        margin-right: 0px;
         width: 100%;
         height: inherit;
     }

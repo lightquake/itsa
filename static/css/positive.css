@@ -62,14 +62,16 @@ hr.post-separator:first-child {
 
 /* Sidebar stuff. */
 #sidebar {
-    padding-right: 10px;
     text-align: right;
+    border-right: 1px #945e1f solid;
+    height: 100%;
+    padding: 10px 40px 10px 0px;
 }
 
 nav#page-bar {
-    padding: 2px 30px 2px 0px;
-    border-right: 1px #945e1f solid;
+    padding: 20px 0px;
 }
+
 
 nav#page-bar ul {
     margin: 0px;
@@ -157,6 +159,7 @@ nav#pagination a {
         text-align: center;
         padding-right: 0px;
         width: 100%;
+        height: inherit;
     }
     #sidebar, #main { -webkit-flex: 1 auto; flex: 1 auto; }
     #content {

@@ -4,3 +4,6 @@
       <a .title href=@{StaticPageR $ view slug staticPage}>
         <li>
           #{view shortTitle staticPage}
+
+<a #rss href=@{RssR}>
+  <img src="/static/img/rss.png" alt="RSS feed icon">

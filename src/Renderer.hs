@@ -94,8 +94,10 @@ renderSidebar = do
 renderPosts :: TimeZone -- ^ The time zone to use for displaying timestamps.
                -> [Post] -- ^ The posts to render, from first to last.
                -> HtmlUrl ItsaR
-renderPosts tz posts = [hamlet|$forall post <- posts
-                                               ^{renderPost tz post}|]
+renderPosts tz posts = [hamlet|
+  $forall post <- posts
+    <hr .post-separator>
+    ^{renderPost tz post}|]
 
 -- | Render the pagination footer; since the page links can vary
 -- depending on the route, we take the router as an argument.

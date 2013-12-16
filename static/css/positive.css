@@ -9,6 +9,19 @@ pre {
     overflow: scroll;
 }
 
+hr {
+    border: 0;
+    height: 1px;
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), #945e1f, rgba(0,0,0,0));
+    background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), #945e1f, rgba(0,0,0,0));
+    background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), #945e1f, rgba(0,0,0,0));
+    background-image:      -o-linear-gradient(left, rgba(0,0,0,0), #945e1f, rgba(0,0,0,0));
+}
+
+hr.post-separator:first-child {
+    display: none;
+}
+
 
 #blog-title {
     font-size: 48px;
@@ -47,10 +60,14 @@ pre {
 
 /* Sidebar stuff. */
 #sidebar {
-    padding-right: 40px;
+    padding-right: 10px;
     text-align: right;
 }
 
+nav#page-bar {
+    padding: 2px 30px 2px 0px;
+    border-right: 1px #945e1f solid;
+}
 
 nav#page-bar ul {
     margin: 0px;
@@ -134,5 +151,17 @@ nav#pagination a {
 
         flex-direction: column;
         flex-wrap: nowrap;
+    }
+    nav#page-bar {
+        padding-right: 0px;
+    }
+
+    article .title {
+        font-size: 28px;
+        text-align: center;
+    }
+
+    hr.post-separator:first-child {
+        display: inherit;
     }
 }

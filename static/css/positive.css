@@ -121,6 +121,18 @@ a:visited {
 }
 
 
+/* Post metadata display */
+
+.metadata {
+    font-size: 80%;
+    padding: 5px 0px 5px 10px;
+}
+
+.metadata .tags {
+    padding-left: 20px;
+}
+
+
 nav#pagination {
     font-size: 20px;
 

@@ -7,6 +7,8 @@ body {
 
 pre {
     overflow: scroll;
+    padding: 20px;
+    background: #eee;
 }
 
 hr {
